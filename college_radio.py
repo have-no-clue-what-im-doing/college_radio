@@ -22,6 +22,19 @@ if not os.path.exists(output_folder):
 
 #print(str(datetime.now()))
 
+def CheckDuplicateSong(table, song):
+    conn = sqlite3.connect('college_radio.db', timeout=10)
+    c = conn.cursor()
+    query_last_song = f'SELECT title FROM {table} ORDER BY id DESC LIMIT 1'
+    c.execute(query_last_song)
+    data = c.fetchall()
+    title = data[0][0]
+    conn.commit()
+    conn.close()
+    print(title, song['title'])
+    if title != song['title']:
+        WriteToTable(song)
+    
 
 def WriteToTable(song_entry_dict):
     conn = sqlite3.connect('college_radio.db', timeout=10)
@@ -29,14 +42,14 @@ def WriteToTable(song_entry_dict):
     cursor.execute(
     '''
     CREATE TABLE IF NOT EXISTS test (
-    id INTERGER PRIMARY KEY AUTOINCREMENT,
-    epoch INTERGER
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    epoch INTEGER
     entry_date TEXT
     college TEXT,
     title TEXT,
     album TEXT,
     genre TEXT,
-    release_date INTERGER,
+    release_date INTEGER,
     shazams INTEGER,
     album_art TEXT
     )
@@ -59,7 +72,7 @@ def WriteToTable(song_entry_dict):
     )
     )
     conn.commit()
-    conn.close
+    conn.close()
 
 
 def RemoveFile(audio_file):
@@ -71,7 +84,7 @@ def IdentifySong(audio_file):
     try:
         song_response = subprocess.run(['songrec', 'audio-file-to-recognized-song', audio_file], capture_output=True, text=True)
         json_song_response = json.loads(song_response.stdout)
-        epoch = time.time()
+        epoch = round(time.time())
         local_timezone = timezone(timedelta(hours=-4))
         entry_date = datetime.now(local_timezone).strftime('%Y-%m-%d %H:%M:%S')
         college = 'Cincinnati'
@@ -92,7 +105,8 @@ def IdentifySong(audio_file):
             'shazams': shazams,
             'album_art': album_art
         }
-        WriteToTable(song_entry_dict)
+        CheckDuplicateSong('test', song_entry_dict)
+        #WriteToTable(song_entry_dict)
         '''
         print(f'Title: {title}')
         print(f'Album: {album}')
