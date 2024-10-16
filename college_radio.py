@@ -2,7 +2,7 @@ import requests
 from datetime import datetime
 import subprocess
 import json
-from mutagen.mp3 import MP3
+import sqlite3
 import time
 import os
 
@@ -21,6 +21,28 @@ if not os.path.exists(output_folder):
 
 #print(str(datetime.now()))
 
+
+def WriteToTable(song_entry_dict):
+    conn = sqlite3.connect('college_radio.db', timeout=10)
+    cursor = conn.cursor()
+    cursor.execute(
+    '''
+    CREATE TABLE IF NOT EXISTS test (
+    id INTERGER PRIMARY KEY AUTOINCREMENT,
+    epoch INTERGER
+    entry_date TEXT
+    college TEXT,
+    title TEXT,
+    album TEXT,
+    genre TEXT,
+    release_date INTERGER,
+    shazams INTEGER,
+    album_art TEXT
+    )
+    '''
+    )
+
+
 def RemoveFile(audio_file):
     os.remove(audio_file)
 
@@ -30,14 +52,24 @@ def IdentifySong(audio_file):
     try:
         song_response = subprocess.run(['songrec', 'audio-file-to-recognized-song', audio_file], capture_output=True, text=True)
         json_song_response = json.loads(song_response.stdout)
+        epoch = time.time()
         title = json_song_response['track']['title']
         album = json_song_response['track']['sections'][0]['metadata'][0]['text']
         release_date = json_song_response['track']['sections'][0]['metadata'][2]['text']
         genre = json_song_response['track']['genres']['primary']
+        song_entry_dict = {
+            'epoch': epoch,
+            'title': title, 
+            'album': album,
+            'release_date': release_date,
+            'genre': genre
+        }
+        '''
         print(f'Title: {title}')
         print(f'Album: {album}')
         print(f'Release Date: {release_date}') 
         print(f'Genre: {genre}')
+        '''
     except Exception as e:
         print(f"Failed to identify song {e}")
     finally:
