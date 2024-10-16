@@ -1,5 +1,6 @@
 import requests
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
+import time
 import subprocess
 import json
 import sqlite3
@@ -53,17 +54,27 @@ def IdentifySong(audio_file):
         song_response = subprocess.run(['songrec', 'audio-file-to-recognized-song', audio_file], capture_output=True, text=True)
         json_song_response = json.loads(song_response.stdout)
         epoch = time.time()
+        local_timezone = timezone(timedelta(hours=-4))
+        entry_date = datetime.now(local_timezone).strftime('%Y-%m-%d %H:%M:%S')
+        college = 'Cincinnati'
         title = json_song_response['track']['title']
         album = json_song_response['track']['sections'][0]['metadata'][0]['text']
         release_date = json_song_response['track']['sections'][0]['metadata'][2]['text']
         genre = json_song_response['track']['genres']['primary']
+        shazams = 100
+        album_art = 'path/to/art/'
         song_entry_dict = {
             'epoch': epoch,
+            'entry_date': entry_date,
+            'college': college,
             'title': title, 
             'album': album,
             'release_date': release_date,
-            'genre': genre
+            'genre': genre,
+            'shazams': shazams,
+            'album_art': album_art
         }
+        WriteToTable(song_entry_dict)
         '''
         print(f'Title: {title}')
         print(f'Album: {album}')
