@@ -42,6 +42,24 @@ def WriteToTable(song_entry_dict):
     )
     '''
     )
+    cursor.execute(
+    '''
+    INSERT INTO test (epoch, entry_date, college, title, album, genre, release_date, shazams, album_art) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ''',
+    (
+    song_entry_dict['epoch'], 
+    song_entry_dict['entry_date'], 
+    song_entry_dict['college'], 
+    song_entry_dict['title'], 
+    song_entry_dict['album'],
+    song_entry_dict['genre'],
+    song_entry_dict['release_date'],
+    song_entry_dict['shazams'],
+    song_entry_dict['album_art']
+    )
+    )
+    conn.commit()
+    conn.close
 
 
 def RemoveFile(audio_file):
