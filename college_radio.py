@@ -28,14 +28,20 @@ def CheckDuplicateSong(table, song):
     query_last_song = f'SELECT title FROM {table} ORDER BY id DESC LIMIT 1'
     c.execute(query_last_song)
     data = c.fetchall()
-    title = data[0][0]
+    print(data)
+    if data:
+        title = data[0][0]
+        print(title)
+        #print(title, song['title'])
+        if title != song['title']:
+            WriteToTable(song)
+    else:
+        WriteToTable(song)
+
     conn.commit()
     conn.close()
-    print(title, song['title'])
-    if title != song['title']:
-        WriteToTable(song)
-    
-
+        
+#this is ugly af but it works 🤪
 def WriteToTable(song_entry_dict):
     conn = sqlite3.connect('college_radio.db', timeout=10)
     cursor = conn.cursor()
@@ -46,6 +52,7 @@ def WriteToTable(song_entry_dict):
     epoch INTEGER
     entry_date TEXT
     college TEXT,
+    artist TEXT,
     title TEXT,
     album TEXT,
     genre TEXT,
@@ -57,12 +64,14 @@ def WriteToTable(song_entry_dict):
     )
     cursor.execute(
     '''
-    INSERT INTO test (epoch, entry_date, college, title, album, genre, release_date, shazams, album_art) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO test (epoch, entry_date, college, artist, title, album, genre, release_date, shazams, album_art) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ''',
     (
     song_entry_dict['epoch'], 
     song_entry_dict['entry_date'], 
     song_entry_dict['college'], 
+    song_entry_dict['artist'],
     song_entry_dict['title'], 
     song_entry_dict['album'],
     song_entry_dict['genre'],
@@ -88,7 +97,8 @@ def IdentifySong(audio_file):
         local_timezone = timezone(timedelta(hours=-4))
         entry_date = datetime.now(local_timezone).strftime('%Y-%m-%d %H:%M:%S')
         college = 'Cincinnati'
-        title = json_song_response['track']['title']
+        artist = json_song_response['track']['subtitle']
+        title = json_song_response['track']['title']      
         album = json_song_response['track']['sections'][0]['metadata'][0]['text']
         release_date = json_song_response['track']['sections'][0]['metadata'][2]['text']
         genre = json_song_response['track']['genres']['primary']
@@ -98,6 +108,7 @@ def IdentifySong(audio_file):
             'epoch': epoch,
             'entry_date': entry_date,
             'college': college,
+            'artist': artist,
             'title': title, 
             'album': album,
             'release_date': release_date,
@@ -106,13 +117,6 @@ def IdentifySong(audio_file):
             'album_art': album_art
         }
         CheckDuplicateSong('test', song_entry_dict)
-        #WriteToTable(song_entry_dict)
-        '''
-        print(f'Title: {title}')
-        print(f'Album: {album}')
-        print(f'Release Date: {release_date}') 
-        print(f'Genre: {genre}')
-        '''
     except Exception as e:
         print(f"Failed to identify song {e}")
     finally:
