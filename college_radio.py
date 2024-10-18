@@ -60,8 +60,8 @@ def CheckDuplicateSong(table, song):
         conn = sqlite3.connect('college_radio.db', timeout=10)
         c = conn.cursor()
         c.execute(
-            '''
-            CREATE TABLE IF NOT EXISTS test (
+            f'''
+            CREATE TABLE IF NOT EXISTS {table} (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 epoch INTEGER,
                 entry_date TEXT,
@@ -90,21 +90,22 @@ def CheckDuplicateSong(table, song):
         if data:
             title = data[0][0]
             if title != song['title']:
-                WriteToTable(song)
+                WriteToTable(song, table)
         else:
-            WriteToTable(song)
+            WriteToTable(song, table)
 
         conn.commit()
         conn.close()
         
 #this is ugly af but it works 🤪
-def WriteToTable(song_entry_dict):
+def WriteToTable(song_entry_dict, table_name):
     conn = sqlite3.connect('college_radio.db', timeout=10)
     cursor = conn.cursor()
     try:
         cursor.execute(
-                '''
-                INSERT INTO test (epoch, entry_date, college, artist, title, album, genre, release_date, popularity, duration, album_art) 
+            
+                f'''
+                INSERT INTO {table_name} (epoch, entry_date, college, artist, title, album, genre, release_date, popularity, duration, album_art) 
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ''',
                 (
@@ -167,7 +168,7 @@ def IdentifySong(audio_file, college_name):
             'duration': duration,
             'album_art': album_art
         }
-        CheckDuplicateSong('test', song_entry_dict)
+        CheckDuplicateSong(college_name, song_entry_dict)
     except Exception as e:
         print(f"Failed to identify song {e}")
     finally:
