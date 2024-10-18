@@ -151,12 +151,11 @@ def IdentifySong(audio_file):
         RemoveFile(audio_file)
 
 
-def StreamTime():
+def StreamTime(college_name, radio_stream):
     while True: 
         try:
-            stream_url = 'https://s2.radio.co/s20123bfa0/listen'
-            r = requests.get(stream_url, stream=True)
-            audio_id = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+            r = requests.get(radio_stream, stream=True)
+            audio_id = college_name + '_' + datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
             file_path = os.path.join(output_folder, f'{audio_id}.mp3')
             start_time = time.time()
             
@@ -178,7 +177,7 @@ def StreamTime():
                 
 #test git push
 
-StreamTime()
+StreamTime('oxford_miami', college_dict['oxford_miami'])
             
         
     
