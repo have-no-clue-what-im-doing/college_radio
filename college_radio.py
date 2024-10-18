@@ -6,6 +6,7 @@ import json
 import sqlite3
 import time
 import os
+from concurrent.futures import ThreadPoolExecutor
 
 college_dict = {
     'ohio': 'https://streamer.radio.co/s319507a6f/listen',
@@ -45,8 +46,6 @@ def GetSpotifyDetails(token, song_title):
         'popularity': popularity,
         'duration': duration
     }
-    print(duration)
-    print(spotify_details)
     return spotify_details
    
 
@@ -91,8 +90,10 @@ def CheckDuplicateSong(table, song):
             title = data[0][0]
             if title != song['title']:
                 WriteToTable(song, table)
+                print('Table: ' + table + ' Title: ' + song['title'] + ' Artist: ' + song['artist'] + ' Year: ' + song['release_date'])
         else:
             WriteToTable(song, table)
+            print('Table: ' + table + ' Title: ' + song['title'] + ' Artist: ' + song['artist'] + ' Year: ' + song['release_date'])
 
         conn.commit()
         conn.close()
@@ -199,7 +200,13 @@ def StreamTime(college_name, radio_stream):
             r.close()  
 
 
-StreamTime('ohio_state', college_dict['ohio_state'])
+#StreamTime('ohio_state', college_dict['ohio_state'])
             
-        
-    
+
+def StreamAllColleges():
+    with ThreadPoolExecutor(max_workers=len(college_dict)) as executor:
+        for college_name, radio_stream in college_dict.items():
+            executor.submit(StreamTime, college_name, radio_stream)       
+
+if __name__ == "__main__":
+    StreamAllColleges()
