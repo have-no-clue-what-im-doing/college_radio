@@ -16,11 +16,36 @@ college_dict = {
 
 output_folder = '../temp_music'
 
+
+def GetToken(client_id, client_secret):
+    url = 'https://accounts.spotify.com/api/token'
+    headers = {
+        'Content-Type': 'application/x-www-form-urlencoded'
+    }
+    data = { 
+        'grant_type': 'client_credentials',
+        'client_id': f'{client_id}',
+        'client_secret': f'{client_secret}'
+    }
+    r = requests.post(url, data=data, headers=headers)
+    response = r.json()
+    return response['access_token']
+
+
+def GetSongPop(token, song_title):
+    url = f'https://api.spotify.com/v1/search?q={song_title}&type=track&limit=1'
+    print(url)
+    headers = {
+       f'Authorization': f'Bearer {token}',
+    }
+    r = requests.get(url, headers=headers)
+    response = r.json()
+    return response['tracks']['items'][0]['popularity']
+   
+
 if not os.path.exists(output_folder):
     os.makedirs(output_folder)
 
-
-#print(str(datetime.now()))
 
 def CheckDuplicateSong(table, song):
     conn = sqlite3.connect('college_radio.db', timeout=10)
@@ -102,7 +127,10 @@ def IdentifySong(audio_file):
         album = json_song_response['track']['sections'][0]['metadata'][0]['text']
         release_date = json_song_response['track']['sections'][0]['metadata'][2]['text']
         genre = json_song_response['track']['genres']['primary']
-        shazams = 100
+        get_song_search = json_song_response['track']['hub']['providers'][0]['actions'][0]['uri'].split(":", 2)[-1]
+        client_id = '0df099f908434dabb0fbc671bdca2e9b' #I rotate keys eventually and use a .env file eventually :)
+        client_secret = '74dce11de46c41689bb330ecb3b169b6' #DON'T GIVE AF RN!!!!
+        shazams = GetSongPop(GetToken(client_id, client_secret), get_song_search)
         album_art = 'path/to/art/'
         song_entry_dict = {
             'epoch': epoch,
@@ -124,22 +152,29 @@ def IdentifySong(audio_file):
 
 
 def StreamTime():
-    stream_url = 'http://arouseosu.com:8800/stream'
-    r = requests.get(stream_url, stream=True)
-    audio_id = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-    file_path = os.path.join(output_folder, f'{audio_id}.mp3')
-    start_time = time.time()
-    try:
-        with open(file_path, 'wb') as f:
-            for block in r.iter_content(1024):
-                f.write(block)
-                current_time = time.time()
-                if (current_time - start_time) >= 60:
-                    break
-    finally: 
-        r.close()
-        IdentifySong(file_path)
-        StreamTime()
+    while True: 
+        try:
+            stream_url = 'https://s2.radio.co/s20123bfa0/listen'
+            r = requests.get(stream_url, stream=True)
+            audio_id = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+            file_path = os.path.join(output_folder, f'{audio_id}.mp3')
+            start_time = time.time()
+            
+            with open(file_path, 'wb') as f:
+                for block in r.iter_content(1024):
+                    f.write(block)
+                    current_time = time.time()
+                    if (current_time - start_time) >= 60: 
+                        break
+            
+            IdentifySong(file_path)
+        
+        except Exception as e:
+            print(f"Error: {e}")
+            time.sleep(10)  
+        finally:
+            r.close()  
+
                 
 #test git push
 
