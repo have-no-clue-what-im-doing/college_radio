@@ -7,12 +7,23 @@ import sqlite3
 import time
 import os
 from concurrent.futures import ThreadPoolExecutor
+import urllib3
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
 
 college_dict = {
     'ohio': 'https://streamer.radio.co/s319507a6f/listen',
     'cincinnati': 'https://s4.radio.co/sa4dd72cde/listen',
     'oxford_miami': 'https://s2.radio.co/s20123bfa0/listen',
-    'ohio_state': 'http://arouseosu.com:8800/stream'
+    'ohio_state': 'http://arouseosu.com:8800/stream',
+    'toledo': 'https://c23.radioboss.fm:8099/stream',
+    'bowling_green_state': 'https://dvstream2.bgsu.edu/wfal',
+    'wright_state': 'https://server.wwsu1069.org/stream',
+    'cleveland_state': 'https://shoutcastwidgets.com/ssl/523/.mp3',
+    'akron': 'http://www.streamvortex.com:11300/stream?type=http&nocache=24694',
+    'youngstown': 'https://streams.radio.co/sc78d93857/listen'
+
 }
 
 output_folder = '../temp_music'
@@ -179,7 +190,7 @@ def IdentifySong(audio_file, college_name):
 def StreamTime(college_name, radio_stream):
     while True: 
         try:
-            r = requests.get(radio_stream, stream=True)
+            r = requests.get(radio_stream, stream=True, verify=False)
             audio_id = college_name + '_' + datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
             file_path = os.path.join(output_folder, f'{audio_id}.mp3')
             start_time = time.time()
