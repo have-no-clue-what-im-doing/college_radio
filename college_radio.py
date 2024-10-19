@@ -217,6 +217,7 @@ def StreamTime(college_name, radio_stream):
 def StreamAllColleges():
     with ThreadPoolExecutor(max_workers=len(college_dict)) as executor:
         for college_name, radio_stream in college_dict.items():
+            time.sleep(2)
             executor.submit(StreamTime, college_name, radio_stream)       
 
 if __name__ == "__main__":
