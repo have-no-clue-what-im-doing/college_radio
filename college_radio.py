@@ -145,42 +145,45 @@ def WriteToTable(song_entry_dict, table_name):
 def RemoveFile(audio_file):
     os.remove(audio_file)
 
-
+yeet = None
 
 def IdentifySong(audio_file, college_name):
     try:
         song_response = subprocess.run(['songrec', 'audio-file-to-recognized-song', audio_file], capture_output=True, text=True)
         json_song_response = json.loads(song_response.stdout)
-        epoch = round(time.time())
-        local_timezone = timezone(timedelta(hours=-4))
-        entry_date = datetime.now(local_timezone).strftime('%Y-%m-%d %H:%M:%S')
-        college = college_name
-        artist = json_song_response['track']['subtitle']
-        title = json_song_response['track']['title']      
-        album = json_song_response['track']['sections'][0]['metadata'][0]['text']
-        release_date = json_song_response['track']['sections'][0]['metadata'][2]['text']
-        genre = json_song_response['track']['genres']['primary']
-        get_song_search = json_song_response['track']['hub']['providers'][0]['actions'][0]['uri'].split(":", 2)[-1]
-        client_id = '0df099f908434dabb0fbc671bdca2e9b' #I rotate keys eventually and use a .env file eventually :)
-        client_secret = '74dce11de46c41689bb330ecb3b169b6' #DON'T GIVE AF RN!!!!
-        spotify_details = GetSpotifyDetails(GetToken(client_id, client_secret), get_song_search)
-        popularity = spotify_details['popularity']
-        duration = spotify_details['duration']
-        album_art = json_song_response['track']['images']['coverart']
-        song_entry_dict = {
-            'epoch': epoch,
-            'entry_date': entry_date,
-            'college': college,
-            'artist': artist,
-            'title': title, 
-            'album': album,
-            'release_date': release_date,
-            'genre': genre,
-            'popularity': popularity,
-            'duration': duration,
-            'album_art': album_art
-        }
-        CheckDuplicateSong(college_name, song_entry_dict)
+        if not json_song_response['matches']:
+            print(f"Unable to identify song for {college_name}")
+        else:
+            epoch = round(time.time())
+            local_timezone = timezone(timedelta(hours=-4))
+            entry_date = datetime.now(local_timezone).strftime('%Y-%m-%d %H:%M:%S')
+            college = college_name
+            artist = json_song_response['track']['subtitle']
+            title = json_song_response['track']['title']      
+            album = json_song_response['track']['sections'][0]['metadata'][0]['text']
+            release_date = json_song_response['track']['sections'][0]['metadata'][2]['text']
+            genre = json_song_response['track']['genres']['primary']
+            get_song_search = json_song_response['track']['hub']['providers'][0]['actions'][0]['uri'].split(":", 2)[-1]
+            client_id = '0df099f908434dabb0fbc671bdca2e9b' #I rotate keys eventually and use a .env file eventually :)
+            client_secret = '74dce11de46c41689bb330ecb3b169b6' #DON'T GIVE AF RN!!!!
+            spotify_details = GetSpotifyDetails(GetToken(client_id, client_secret), get_song_search)
+            popularity = spotify_details['popularity']
+            duration = spotify_details['duration']
+            album_art = json_song_response['track']['images']['coverart']
+            song_entry_dict = {
+                'epoch': epoch,
+                'entry_date': entry_date,
+                'college': college,
+                'artist': artist,
+                'title': title, 
+                'album': album,
+                'release_date': release_date,
+                'genre': genre,
+                'popularity': popularity,
+                'duration': duration,
+                'album_art': album_art
+            }
+            CheckDuplicateSong(college_name, song_entry_dict)
     except Exception as e:
         print(f"Failed to identify song {e}")
     finally:
@@ -217,7 +220,7 @@ def StreamTime(college_name, radio_stream):
 def StreamAllColleges():
     with ThreadPoolExecutor(max_workers=len(college_dict)) as executor:
         for college_name, radio_stream in college_dict.items():
-            time.sleep(2)
+            time.sleep(2) #stagger my streams:
             executor.submit(StreamTime, college_name, radio_stream)       
 
 if __name__ == "__main__":
