@@ -150,26 +150,50 @@ yeet = None
 def IdentifySong(audio_file, college_name):
     try:
         song_response = subprocess.run(['songrec', 'audio-file-to-recognized-song', audio_file], capture_output=True, text=True)
-        json_song_response = json.loads(song_response.stdout)
-        if not json_song_response['matches']:
+        if not song_response.stdout:
+            print(f'Could not get valid response from songrec command for {college_name}')
+            return
+        try:
+            json_song_response = json.loads(song_response.stdout)
+        except json.JSONDecodeError:
+            print(f"Could not parse json for {college_name}")
+            return
+        if not json_song_response.get('matches'):
             print(f"Unable to identify song for {college_name}")
         else:
             epoch = round(time.time())
             local_timezone = timezone(timedelta(hours=-4))
             entry_date = datetime.now(local_timezone).strftime('%Y-%m-%d %H:%M:%S')
             college = college_name
-            artist = json_song_response['track']['subtitle']
-            title = json_song_response['track']['title']      
-            album = json_song_response['track']['sections'][0]['metadata'][0]['text']
-            release_date = json_song_response['track']['sections'][0]['metadata'][2]['text']
-            genre = json_song_response['track']['genres']['primary']
-            get_song_search = json_song_response['track']['hub']['providers'][0]['actions'][0]['uri'].split(":", 2)[-1]
+            artist = json_song_response.get('track', {}).get('subtitle', None)
+            title = json_song_response.get('track', {}).get('title', None)
+            album = json_song_response.get('track', {}).get('sections', [{}])[0].get('metadata', [{}])[0].get('text', None)
+            release_date = json_song_response.get('track', {}).get('sections', [{}])[0].get('metadata', [{}])[2].get('text', None)
+            genre = json_song_response.get('track', {}).get('genres', {}).get('primary', None)
+            album_art = json_song_response['track']['images']['coverart']
+            album_art = json_song_response.get('track', {}).get('images', {}).get('coverart', None)
+
+            if (artist or title or album) == None:
+                print("Unable to get song details for artist / title / album")
+                return
+            try:
+                get_song_search = json_song_response.get('track', {}).get('hub', {}).get('providers', [{}])[0].get('actions', [{}])[0].get('uri', None)
+                if get_song_search:
+                    get_song_search = get_song_search.split(":", 2)[-1]
+            except (IndexError, KeyError):
+                get_song_search = None
+
             client_id = '0df099f908434dabb0fbc671bdca2e9b' #I rotate keys eventually and use a .env file eventually :)
             client_secret = '74dce11de46c41689bb330ecb3b169b6' #DON'T GIVE AF RN!!!!
-            spotify_details = GetSpotifyDetails(GetToken(client_id, client_secret), get_song_search)
-            popularity = spotify_details['popularity']
-            duration = spotify_details['duration']
-            album_art = json_song_response['track']['images']['coverart']
+
+            if get_song_search:
+                spotify_details = GetSpotifyDetails(GetToken(client_id, client_secret), get_song_search)
+                popularity = spotify_details.get('popularity', None)
+                duration = spotify_details.get('duration', None)
+            else:
+                popularity = None
+                duration = None
+            
             song_entry_dict = {
                 'epoch': epoch,
                 'entry_date': entry_date,
@@ -194,6 +218,10 @@ def StreamTime(college_name, radio_stream):
     while True: 
         try:
             r = requests.get(radio_stream, stream=True, verify=False)
+            if r.status_code != 200:
+                print(f"Not getting 200 response from {college_name} stream. Will try again in 5 minutes")
+                time.sleep(300)
+                continue
             audio_id = college_name + '_' + datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
             file_path = os.path.join(output_folder, f'{audio_id}.mp3')
             start_time = time.time()
