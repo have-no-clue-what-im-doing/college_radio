@@ -22,7 +22,27 @@ college_dict = {
     'wright_state': 'https://server.wwsu1069.org/stream',
     'cleveland_state': 'https://shoutcastwidgets.com/ssl/523/.mp3',
     'akron': 'http://www.streamvortex.com:11300/stream?type=http&nocache=24694',
-    'youngstown': 'https://streams.radio.co/sc78d93857/listen'
+    'youngstown': 'https://streams.radio.co/sc78d93857/listen',
+    'connecticut':	'http://stream.whus.org:8000/whusfm',
+    'yale':	'DEAD',
+    'central_connecticut_state':	'https://listen.mixlr.com/d5b2cdc5c115cd1d3484049b0ddf00e7',
+    'southern_connecticut_state':	'https://cp13.shoutcheap.com:18181/stream',
+    'quinnipiac':	'https://ice64.securenetsystems.net/WQAQ',
+    'sacred_heart':	'https://wshu-iad.streamguys1.com/wshu-air',
+    'new_england':	'https://wnecfm.radioca.st/stream?type=http',
+    'maine':	'http://wmeb-stream.maine.edu:8000/wmeb',
+    'southern_maine':	'https://stream.pacificaservice.org:9000/wmpg',
+    'maine_at_augusta':	'https://das-edge10-live365-dal03.cdnstream.com/a77762',
+    'boston':	'http://wtbu.bu.edu:1800/',
+    'massachusetts_amherst':	'https://usa5.fastcast4u.com/proxy/qernhlca?mp=/1',
+    'harvard':	'https://stream.whrb.org/whrb-he-aac',
+    'northeastern':	'https://audio-edge-qse4n.yyz.g.radiomast.io/dafd1179-5404-4939-9c1c-a014c6964254',
+    'massachusetts_lowell':	'https://securestream.casthost.net:8609/stream',
+    'massachusetts_boston':	'https://wumb.streamguys1.com/wumb919fast',
+    'boston_college':	'https://stream.wzbc.org/wzbc',
+    'mit':	'https://wmbr.org:8002/hi',
+    'southern_new_hampshire':	'http://s9.viastreaming.net:9000/;stream.mp3'
+
 
 }
 
@@ -230,7 +250,7 @@ def StreamTime(college_name, radio_stream):
                 for block in r.iter_content(1024):
                     f.write(block)
                     current_time = time.time()
-                    if (current_time - start_time) >= 60: 
+                    if (current_time - start_time) >= 90: 
                         break
             
             IdentifySong(file_path, college_name)
@@ -248,7 +268,7 @@ def StreamTime(college_name, radio_stream):
 def StreamAllColleges():
     with ThreadPoolExecutor(max_workers=len(college_dict)) as executor:
         for college_name, radio_stream in college_dict.items():
-            time.sleep(2) #stagger my streams:
+            time.sleep(5) #stagger my streams:
             executor.submit(StreamTime, college_name, radio_stream)       
 
 if __name__ == "__main__":

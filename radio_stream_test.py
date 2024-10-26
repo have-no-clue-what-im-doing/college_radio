@@ -1,7 +1,7 @@
 import requests
 import json
 
-radio_stream = 'http://arouseosu.com:8800/stream'
+radio_stream = 'https://wmbr.org:8002/hi'
 radio_stream2 = 'https://s4.radio.co/sa4dd72cde/listen'
 
 r = requests.get(radio_stream, stream=True, verify=False)
