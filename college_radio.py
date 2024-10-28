@@ -3,6 +3,7 @@ from datetime import datetime, timedelta, timezone
 import time
 import subprocess
 import json
+import psycopg2
 import sqlite3
 import time
 import os
@@ -20,34 +21,24 @@ college_dict = {
     'toledo': 'https://c23.radioboss.fm:8099/stream',
     'bowling_green_state': 'https://dvstream2.bgsu.edu/wfal',
     'wright_state': 'https://server.wwsu1069.org/stream',
-    'cleveland_state': 'https://shoutcastwidgets.com/ssl/523/.mp3',
-    'akron': 'http://www.streamvortex.com:11300/stream?type=http&nocache=24694',
-    'youngstown': 'https://streams.radio.co/sc78d93857/listen',
-    'connecticut':	'http://stream.whus.org:8000/whusfm',
-    'yale':	'DEAD',
-    'central_connecticut_state':	'https://listen.mixlr.com/d5b2cdc5c115cd1d3484049b0ddf00e7',
-    'southern_connecticut_state':	'https://cp13.shoutcheap.com:18181/stream',
-    'quinnipiac':	'https://ice64.securenetsystems.net/WQAQ',
-    'sacred_heart':	'https://wshu-iad.streamguys1.com/wshu-air',
-    'new_england':	'https://wnecfm.radioca.st/stream?type=http',
-    'maine':	'http://wmeb-stream.maine.edu:8000/wmeb',
-    'southern_maine':	'https://stream.pacificaservice.org:9000/wmpg',
-    'maine_at_augusta':	'https://das-edge10-live365-dal03.cdnstream.com/a77762',
-    'boston':	'http://wtbu.bu.edu:1800/',
-    'massachusetts_amherst':	'https://usa5.fastcast4u.com/proxy/qernhlca?mp=/1',
-    'harvard':	'https://stream.whrb.org/whrb-he-aac',
-    'northeastern':	'https://audio-edge-qse4n.yyz.g.radiomast.io/dafd1179-5404-4939-9c1c-a014c6964254',
-    'massachusetts_lowell':	'https://securestream.casthost.net:8609/stream',
-    'massachusetts_boston':	'https://wumb.streamguys1.com/wumb919fast',
-    'boston_college':	'https://stream.wzbc.org/wzbc',
-    'mit':	'https://wmbr.org:8002/hi',
-    'southern_new_hampshire':	'http://s9.viastreaming.net:9000/;stream.mp3'
+    'akron': 'http://www.streamvortex.com:11300/stream?type=http&nocache=24694'
+
+
 
 
 }
 
 output_folder = '../temp_music'
 
+
+def ConnectToDB():
+    return psycopg2.connect(
+        dbname="college_radio",  
+        user="college_radio",    
+        password="fatrandy123",  
+        host="10.10.13.35",        
+        port="5432"    
+    )
 
 def GetToken(client_id, client_secret):
     url = 'https://accounts.spotify.com/api/token'
@@ -85,21 +76,21 @@ if not os.path.exists(output_folder):
 
 
 def CheckDuplicateSong(table, song):
-    
+    conn = None
     try:
-        conn = sqlite3.connect('college_radio.db', timeout=10)
+        conn = ConnectToDB()
         c = conn.cursor()
         c.execute(
             f'''
             CREATE TABLE IF NOT EXISTS {table} (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                epoch INTEGER,
-                entry_date TEXT,
-                college TEXT,
-                artist TEXT,
-                title TEXT,
-                album TEXT,
-                genre TEXT,
+                id SERIAL PRIMARY KEY,
+                epoch BIGINT,
+                entry_date TIMESTAMP,
+                college VARCHAR(255),
+                artist VARCHAR(255),
+                title VARCHAR(255),
+                album VARCHAR(255),
+                genre VARCHAR(255),
                 release_date INTEGER,
                 popularity INTEGER,
                 duration INTEGER,
@@ -107,13 +98,6 @@ def CheckDuplicateSong(table, song):
             )
             '''
         )
-        c.close()
-        conn.close()
-    except Exception as e:
-        print(f'error: {e}')
-    finally:
-        conn = sqlite3.connect('college_radio.db', timeout=10)
-        c = conn.cursor()
         query_last_song = f'SELECT title FROM {table} ORDER BY id DESC LIMIT 1'
         c.execute(query_last_song)
         data = c.fetchall()
@@ -121,24 +105,29 @@ def CheckDuplicateSong(table, song):
             title = data[0][0]
             if title != song['title']:
                 WriteToTable(song, table)
-                print('Table: ' + table + ' Title: ' + song['title'] + ' Artist: ' + song['artist'] + ' Year: ' + song['release_date'])
+                print(f'Table: {table} Title: {song["title"]} Artist: {song["artist"]} Year: {song["release_date"]}')
         else:
             WriteToTable(song, table)
-            print('Table: ' + table + ' Title: ' + song['title'] + ' Artist: ' + song['artist'] + ' Year: ' + song['release_date'])
+            print(f'Table: {table} Title: {song["title"]} Artist: {song["artist"]} Year: {song["release_date"]}')
+        
+        conn.commit()  
+    except Exception as e:
+        print(f'Error: {e}')
+    finally:
+        if conn:
+            conn.close()  
 
-        conn.commit()
-        conn.close()
         
 #this is ugly af but it works 🤪
 def WriteToTable(song_entry_dict, table_name):
-    conn = sqlite3.connect('college_radio.db', timeout=10)
+    conn = ConnectToDB()
     cursor = conn.cursor()
     try:
         cursor.execute(
             
                 f'''
                 INSERT INTO {table_name} (epoch, entry_date, college, artist, title, album, genre, release_date, popularity, duration, album_art) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 ''',
                 (
                     song_entry_dict['epoch'], 
@@ -250,14 +239,14 @@ def StreamTime(college_name, radio_stream):
                 for block in r.iter_content(1024):
                     f.write(block)
                     current_time = time.time()
-                    if (current_time - start_time) >= 90: 
+                    if (current_time - start_time) >= 60: 
                         break
             
             IdentifySong(file_path, college_name)
         
         except Exception as e:
             print(f"Error: {e}")
-            time.sleep(10)  
+            time.sleep(2)  
         finally:
             r.close()  
 

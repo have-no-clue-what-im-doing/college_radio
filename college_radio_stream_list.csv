@@ -10,7 +10,7 @@ Dayton,dayton,https://ais-sa1.streamon.fm/7041_48k.aac/playlist.m3u8?listenerId=
 Youngstown,youngstown,https://streams.radio.co/sc78d93857/listen,https://rookeryradio.com/
 Xavier,xavier,DEAD,https://mixlr.com/xavier-university-radio/
 Connecticut,connecticut,http://stream.whus.org:8000/whusfm,https://whus.org/
-Yale,yale,DEAD,https://wybc.com/
+Yale,yale,https://wybcx-stream.creek.org/studio-1,https://wybc.com/
 Central Connecticut State,central_connecticut_state,https://listen.mixlr.com/d5b2cdc5c115cd1d3484049b0ddf00e7,https://wfcsradio.com/
 Southern Connecticut State,southern_connecticut_state,https://cp13.shoutcheap.com:18181/stream,https://wsinradio.org/
 Quinnipiac,quinnipiac,https://ice64.securenetsystems.net/WQAQ,https://wqaq.com/
@@ -27,4 +27,19 @@ Massachusetts Lowell,massachusetts_lowell,https://securestream.casthost.net:8609
 Massachusetts Boston,massachusetts_boston,https://wumb.streamguys1.com/wumb919fast,https://wumb.org/
 Boston College,boston_college,https://stream.wzbc.org/wzbc,https://www.wzbc.org/
 MIT,mit,https://wmbr.org:8002/hi,https://wmbr.org/
-Southern New Hampshire,southern_new_hampshire,http://s9.viastreaming.net:9000/;stream.mp3,https://www.unh.edu/wunh/
+New Hampshire,new_hampshire,http://s9.viastreaming.net:9000/;stream.mp3,https://www.unh.edu/wunh/
+Southern New Hampshire,southern_new_hampshire,DEAD,https://radiosnhu.com/tune-in
+Dartmouth,dartmouth,https://18093.live.streamtheworld.com/DC_RADIOAAC.aac,https://webdcr.com/
+Plymouth State,plymouth_state,https://das-edge17-live365-dal02.cdnstream.com/a55917,https://www.plymouth.edu/wpcr/
+Rutgers,rutgers,https://wrsu-libstrm.radioca.st/stream,https://radio.rutgers.edu/
+Rowan ,rowan,https://wglsradio.rowan.edu/wgls,https://wgls.rowan.edu/
+Montclair State,montclair_state,https://peridot.streamguys1.com:5485/live-mp3,https://wmscradio.com/
+Kean ,kean,http://ic2591.c2343.fast-serv.com/stream,https://www.wknj903.com/
+Fairleigh Dickinson University,fairleigh_dickinson_university,they have multiple audio streams. I'll have to look at this later,https://wfdu.fm/
+Seton Hall,seton_hall,https://d3byg0ij92yqk6.cloudfront.net/streamWSOU11491934270.aac IT'S A M3U8 UUGGGGH. WILL LOOK AT LATER,https://www.wsou.net/index.html
+Princeton,princeton,https://wprb.streamguys1.com/live,https://wprb.com/
+New York,new_york,https://cinema.acs.its.nyu.edu:8000/wnyu128.mp3,https://wnyu.org/
+Columbia,columbia,https://wkcr.streamguys1.com/live,https://www.cc-seas.columbia.edu/wkcr/
+Buffalo,buffalo,http://136.183.9.38:3307/stream/1/,https://wbny.buffalostate.edu/
+Cornell,cornell,https://das-edge11-live365-dal03.cdnstream.com/a25496,https://www.wvbr.com/
+Stony Brook,stony_brook,https://stream.wusb.stonybrook.edu:8092/listen.pl/relay,https://www.wusb.fm/
