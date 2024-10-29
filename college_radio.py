@@ -1,16 +1,32 @@
 import requests
+import logging
+import logging.handlers
+import socket
+import os
 from datetime import datetime, timedelta, timezone
 import time
 import subprocess
 import json
 import psycopg2
-import sqlite3
 import time
 import os
 from concurrent.futures import ThreadPoolExecutor
 import urllib3
 
+#disable the dumbass warnings about no https
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+hostname = socket.gethostname()
+ip_address = requests.get("https://ipecho.net/plain").text
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
+syslog_handler = logging.handlers.SysLogHandler(address=('log.broderic.pro', 514))  
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+syslog_handler.setFormatter(formatter)
+logger.addHandler(syslog_handler)
+
 
 
 college_dict = {
@@ -105,14 +121,14 @@ def CheckDuplicateSong(table, song):
             title = data[0][0]
             if title != song['title']:
                 WriteToTable(song, table)
-                print(f'Table: {table} Title: {song["title"]} Artist: {song["artist"]} Year: {song["release_date"]}')
+                logger.info(f'{hostname} {ip_address} Table: {table} Title: {song["title"]} Artist: {song["artist"]} Year: {song["release_date"]}')
         else:
             WriteToTable(song, table)
-            print(f'Table: {table} Title: {song["title"]} Artist: {song["artist"]} Year: {song["release_date"]}')
+            logger.info(f'{hostname} {ip_address} Table: {table} Title: {song["title"]} Artist: {song["artist"]} Year: {song["release_date"]}')
         
         conn.commit()  
     except Exception as e:
-        print(f'Error: {e}')
+        logger.error(f'{hostname} {ip_address} {e}')
     finally:
         if conn:
             conn.close()  
@@ -145,7 +161,7 @@ def WriteToTable(song_entry_dict, table_name):
             )
         conn.commit()
     except Exception as e:
-        print(f"Failed to write to table: {e}")
+        logger.error(f"{hostname} {ip_address} Failed to write to table: {e}")
     finally:
         conn.close()
 
@@ -160,15 +176,16 @@ def IdentifySong(audio_file, college_name):
     try:
         song_response = subprocess.run(['songrec', 'audio-file-to-recognized-song', audio_file], capture_output=True, text=True)
         if not song_response.stdout:
-            print(f'Could not get valid response from songrec command for {college_name}')
+            logger.error(f'{hostname} {ip_address} Could not get valid response from songrec command for {college_name}')
+            time.sleep(15)
             return
         try:
             json_song_response = json.loads(song_response.stdout)
         except json.JSONDecodeError:
-            print(f"Could not parse json for {college_name}")
+            logger.error(f"{hostname} {ip_address} Could not parse json for {college_name}")
             return
         if not json_song_response.get('matches'):
-            print(f"Unable to identify song for {college_name}")
+            logger.error(f"{hostname} {ip_address} Unable to identify song for {college_name}")
         else:
             epoch = round(time.time())
             local_timezone = timezone(timedelta(hours=-4))
@@ -183,7 +200,7 @@ def IdentifySong(audio_file, college_name):
             album_art = json_song_response.get('track', {}).get('images', {}).get('coverart', None)
 
             if (artist or title or album) == None:
-                print("Unable to get song details for artist / title / album")
+                logger.error(f"{hostname} {ip_address} Unable to get song details for artist / title / album")
                 return
             try:
                 get_song_search = json_song_response.get('track', {}).get('hub', {}).get('providers', [{}])[0].get('actions', [{}])[0].get('uri', None)
@@ -218,7 +235,7 @@ def IdentifySong(audio_file, college_name):
             }
             CheckDuplicateSong(college_name, song_entry_dict)
     except Exception as e:
-        print(f"Failed to identify song {e}")
+        logger.error(f"{hostname} {ip_address} Failed to identify song {e}")
     finally:
         RemoveFile(audio_file)
 
@@ -228,7 +245,7 @@ def StreamTime(college_name, radio_stream):
         try:
             r = requests.get(radio_stream, stream=True, verify=False)
             if r.status_code != 200:
-                print(f"Not getting 200 response from {college_name} stream. Will try again in 5 minutes")
+                logger.error(f"{hostname} {ip_address} Not getting 200 response from {college_name} stream. Will try again in 5 minutes")
                 time.sleep(300)
                 continue
             audio_id = college_name + '_' + datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
