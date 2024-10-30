@@ -12,6 +12,7 @@ import time
 import os
 from concurrent.futures import ThreadPoolExecutor
 import urllib3
+import yaml
 
 #disable the dumbass warnings about no https
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -28,32 +29,27 @@ syslog_handler.setFormatter(formatter)
 logger.addHandler(syslog_handler)
 
 
-
-college_dict = {
-    'ohio': 'https://streamer.radio.co/s319507a6f/listen',
-    'cincinnati': 'https://s4.radio.co/sa4dd72cde/listen',
-    'oxford_miami': 'https://s2.radio.co/s20123bfa0/listen',
-    'ohio_state': 'http://arouseosu.com:8800/stream',
-    'toledo': 'https://c23.radioboss.fm:8099/stream',
-    'bowling_green_state': 'https://dvstream2.bgsu.edu/wfal',
-    'wright_state': 'https://server.wwsu1069.org/stream',
-    'akron': 'http://www.streamvortex.com:11300/stream?type=http&nocache=24694'
+# read my yaml file:
+with open('./config.yaml', 'r') as file:
+    yaml_config = yaml.safe_load(file)
 
 
 
 
-}
+college_dict = yaml_config['college_dict']
+database_dict = yaml_config['database']
+spotify_dict = yaml_config['spotify']
 
 output_folder = '../temp_music'
 
 
 def ConnectToDB():
     return psycopg2.connect(
-        dbname="college_radio",  
-        user="college_radio",    
-        password="fatrandy123",  
-        host="10.10.13.35",        
-        port="5432"    
+        dbname = database_dict['dbname'],  
+        user = database_dict['user'], 
+        password = database_dict['password'],
+        host = database_dict['host'],      
+        port = database_dict['port'] 
     )
 
 def GetToken(client_id, client_secret):
@@ -209,8 +205,8 @@ def IdentifySong(audio_file, college_name):
             except (IndexError, KeyError):
                 get_song_search = None
 
-            client_id = '0df099f908434dabb0fbc671bdca2e9b' #I rotate keys eventually and use a .env file eventually :)
-            client_secret = '74dce11de46c41689bb330ecb3b169b6' #DON'T GIVE AF RN!!!!
+            client_id = spotify_dict['client_id'] 
+            client_secret = spotify_dict['client_secret']  #fixed :)
 
             if get_song_search:
                 spotify_details = GetSpotifyDetails(GetToken(client_id, client_secret), get_song_search)
@@ -271,11 +267,22 @@ def StreamTime(college_name, radio_stream):
 #StreamTime('ohio_state', college_dict['ohio_state'])
             
 
+from concurrent.futures import ThreadPoolExecutor
+import time
+
 def StreamAllColleges():
-    with ThreadPoolExecutor(max_workers=len(college_dict)) as executor:
-        for college_name, radio_stream in college_dict.items():
-            time.sleep(5) #stagger my streams:
-            executor.submit(StreamTime, college_name, radio_stream)       
+    college_keys = list(college_dict.keys()) 
+    start_index = 5
+    end_index = 11
+    end_index = min(end_index, len(college_keys))
+    with ThreadPoolExecutor(max_workers=end_index - start_index) as executor:
+        for i in range(start_index, end_index):
+            college_name = college_keys[i]  
+            print(college_name)
+            radio_stream = college_dict[college_name]
+            time.sleep(5)  
+            executor.submit(StreamTime, college_name, radio_stream)
+   
 
 if __name__ == "__main__":
     StreamAllColleges()
