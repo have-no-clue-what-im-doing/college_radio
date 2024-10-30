@@ -17,6 +17,9 @@ import yaml
 #disable the dumbass warnings about no https
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
+#disable ipv6. I want only ipv4 addresses in logs. IPv6 taking up way too much space
+requests.packages.urllib3.util.connection.HAS_IPV6 = False
+
 hostname = socket.gethostname()
 ip_address = requests.get("https://ipecho.net/plain").text
 
