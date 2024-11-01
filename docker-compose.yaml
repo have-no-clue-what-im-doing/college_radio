@@ -7,8 +7,8 @@ services:
       - START_INDEX=0
       - END_INDEX=12
   college_stream_2:
-    container_name: college-radio-1
-    hostname: college-radio-1
+    container_name: college-radio-2
+    hostname: college-radio-2
     build: .
     environment:
       - START_INDEX=12
