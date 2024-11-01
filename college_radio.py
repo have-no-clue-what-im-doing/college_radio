@@ -241,6 +241,8 @@ def IdentifySong(audio_file, college_name):
 
 def StreamTime(college_name, radio_stream):
     while True: 
+        remove_old_audio = ["find", ".", "-type", "f", "-name", f"*{college_name}*", "-delete"]
+        subprocess.run(remove_old_audio, capture_output=True, text=True)
         try:
             r = requests.get(radio_stream, stream=True, verify=False)
             if r.status_code != 200:
