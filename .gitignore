@@ -1,3 +1,4 @@
 *.yaml
 
 !template.yaml
+!docker-compose.yaml

@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  college_stream_1:
+    container_name: college_radio_1
+    hostname: college_radio_1
+    build: .
+    environment:
+      - START_INDEX=0
+      - END_INDEX=5

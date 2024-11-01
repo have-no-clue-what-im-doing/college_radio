@@ -27,7 +27,7 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 syslog_handler = logging.handlers.SysLogHandler(address=('log.broderic.pro', 514))  
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+formatter = logging.Formatter('%(levelname)s - %(message)s')
 syslog_handler.setFormatter(formatter)
 logger.addHandler(syslog_handler)
 
@@ -270,21 +270,23 @@ def StreamTime(college_name, radio_stream):
 #StreamTime('ohio_state', college_dict['ohio_state'])
             
 
-from concurrent.futures import ThreadPoolExecutor
-import time
+start_index = int(os.getenv("START_INDEX", "0"))
+end_index = int(os.getenv("END_INDEX", "5"))
 
 def StreamAllColleges():
-    college_keys = list(college_dict.keys()) 
-    start_index = 5
-    end_index = 11
-    end_index = min(end_index, len(college_keys))
-    with ThreadPoolExecutor(max_workers=end_index - start_index) as executor:
-        for i in range(start_index, end_index):
-            college_name = college_keys[i]  
+    college_keys = list(college_dict.keys())
+    end_index_actual = min(end_index, len(college_keys))
+    with ThreadPoolExecutor(max_workers=end_index_actual - start_index) as executor:
+        for i in range(start_index, end_index_actual):
+            college_name = college_keys[i]
             print(college_name)
             radio_stream = college_dict[college_name]
-            time.sleep(5)  
+            time.sleep(5)
             executor.submit(StreamTime, college_name, radio_stream)
+
+if __name__ == "__main__":
+    StreamAllColleges()
+
    
 
 if __name__ == "__main__":
