@@ -186,6 +186,7 @@ def IdentifySong(audio_file, college_name):
         if not json_song_response.get('matches'):
             logger.error(f"{hostname} {ip_address} Unable to identify song for {college_name}")
         else:
+            print(json_song_response)
             epoch = round(time.time())
             local_timezone = timezone(timedelta(hours=-4))
             entry_date = datetime.now(local_timezone).strftime('%Y-%m-%d %H:%M:%S')
@@ -235,6 +236,8 @@ def IdentifySong(audio_file, college_name):
             CheckDuplicateSong(college_name, song_entry_dict)
     except Exception as e:
         logger.error(f"{hostname} {ip_address} Failed to identify song {e}")
+        logger.error(f"{hostname} {ip_address} song entry: {song_entry_dict}")
+        logger.error(f"{hostname} {ip_address} json response: {json_song_response}")
     finally:
         RemoveFile(audio_file)
 

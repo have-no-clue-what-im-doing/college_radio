@@ -52,3 +52,24 @@ Pittsburgh,pittsburgh,http://audio.wpts.pitt.edu:8000/wpts_live_128s.mp3,https:/
 Temple,temple,https://ice23.securenetsystems.net/WHIP,https://www.whipradiotu.com/
 Pennsylvania,pennsylvania,https://shaincast.caster.fm:35011/listen.mp3,https://wqhs.upenn.edu/
 Villanova,villanova,https://securestream.casthost.net:8159/stream,https://wxvu.org/
+Rhode Island,rhode_island,http://131.128.158.230:8000/wriu-fm,https://wriu.org/
+Brown,brown,https://listen.bsrlive.com/bsrmp3,https://www.bsrlive.com/
+Vermont,vermont,http://icecast.uvm.edu:8005/wruv_fm_128,http://wruv.org/
+Illinois at Urbana Champaign,illinois_urbana_champaign,https://ice64.securenetsystems.net/WPGUFM,https://wpgu.com/
+Iillinois at Chicago,illinois_chicago,https://us2.maindigitalstream.com/ssl/UIC,https://www.uicradio.net/
+Northwestern,northwestern,https://n14.rcs.revma.com/w4pmmfkdx4zuv,https://wnur.org/
+DuPage,dupage,wdcb-ice.streamguys1.com/mobile-AAC,https://wdcb.org/
+DePaul,dupaul,https://ice26.securenetsystems.net/RADIODEPAUL,https://radiodepaul.com/
+Illinois State,illinois_state,https://15693.live.streamtheworld.com/WZNDFM.mp3,https://wznd.com/
+Chicago,chicago,https://whpk-stream.uchicago.edu/stream,https://whpk.org/
+Loyola Chicago,loyola_chicago,https://wluw.streamguys1.com/stream.mp3,https://wluw.org/
+Purdue,purdue,https://cdn-embed.tunein.com/resources/media/blank.mp3,https://www.wccrpurdue.org/
+Indiana,indiana,https://ice25.securenetsystems.net/WIUXLP,https://www.wiux.org/
+Ball State,ball_state,https://s6.reliastream.com/proxy/ballstat?mp=/stream,https://wcrd.net/
+Vincennes,vincennes,https://wvub.streamguys1.com/live-mp3,https://www.wvub.org/
+Notre Dame,notre_dame,https://s4.radio.co/s49f365ee3/listen,https://wvfi.nd.edu/
+Iowa,iowa,https://krui.student-services.uiowa.edu:8000/listen,https://krui.fm/listen/
+Iowa State,iowa_state,http://kure-network.stuorg.iastate.edu:8000/KUREBroadcast,https://kure.stuorg.iastate.edu/
+Kanas,kansas,https://listen.mixlr.com/3ad882f8368477dc9e463ba587743eb4,https://kjhk.org/web/
+Kansas State,kansas_state,https://s.radiowave.io/ksdb.opus,https://radiowave.io/s/KSDB/overview
+Wichita State,,,
