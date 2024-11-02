@@ -191,21 +191,12 @@ def IdentifySong(audio_file, college_name):
             local_timezone = timezone(timedelta(hours=-4))
             entry_date = datetime.now(local_timezone).strftime('%Y-%m-%d %H:%M:%S')
             college = college_name
-            print('title ' + college)
             artist = json_song_response.get('track', {}).get('subtitle', None)
-            print('artist ' + artist)
             title = json_song_response.get('track', {}).get('title', None)
-            print('title ' + title)
             album = json_song_response.get('track', {}).get('sections', [{}])[0].get('metadata', [{}])[0].get('text', None)
-            print('album ' + album)
             release_date = json_song_response.get('track', {}).get('sections', [{}])[0].get('metadata', [{}])[2].get('text', None)
-            print('release date ' + release_date)
             genre = json_song_response.get('track', {}).get('genres', {}).get('primary', None)
-            print('genre ' + genre)
             album_art = json_song_response.get('track', {}).get('images', {}).get('coverart', None)
-            print('album art ' + album_art)
-
-
             if (artist or title or album) == None:
                 logger.error(f"{hostname} {ip_address} Unable to get song details for artist / title / album")
                 return
@@ -240,6 +231,7 @@ def IdentifySong(audio_file, college_name):
                 'duration': duration,
                 'album_art': album_art
             }
+            print(song_entry_dict)
             CheckDuplicateSong(college_name, song_entry_dict)
     except Exception as e:
         logger.error(f"{hostname} {ip_address} Failed to identify song {e}")
