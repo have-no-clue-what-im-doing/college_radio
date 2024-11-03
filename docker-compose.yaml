@@ -20,3 +20,24 @@ services:
     environment:
       - START_INDEX=24
       - END_INDEX=36
+  college_stream_4:
+    container_name: college-radio-4
+    hostname: college-radio-4
+    build: .
+    environment:
+      - START_INDEX=36
+      - END_INDEX=48
+  college_stream_5:
+    container_name: college-radio-5
+    hostname: college-radio-5
+    build: .
+    environment:
+      - START_INDEX=48
+      - END_INDEX=60
+  college_stream_6:
+    container_name: college-radio-6
+    hostname: college-radio-6
+    build: .
+    environment:
+      - START_INDEX=60
+      - END_INDEX=72
