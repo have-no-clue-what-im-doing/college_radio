@@ -8,8 +8,6 @@ import time
 import subprocess
 import json
 import psycopg2
-import time
-import os
 from concurrent.futures import ThreadPoolExecutor
 import urllib3
 import yaml
@@ -71,24 +69,42 @@ def GetToken(client_id, client_secret):
 
 
 def GetSpotifyDetails(token, song_title):
-    url = f'https://api.spotify.com/v1/search?q={song_title}&type=track&limit=1'
-    headers = {
-       f'Authorization': f'Bearer {token}',
-    }
-    r = requests.get(url, headers=headers)
-    response = r.json()
-    popularity = response['tracks']['items'][0]['popularity']
-    duration = round((response['tracks']['items'][0]['duration_ms']) / 1000)
-    spotify_details = {
-        'popularity': popularity,
-        'duration': duration
-    }
-    return spotify_details
+    try:
+        url = f'https://api.spotify.com/v1/search?q={song_title}&type=track&limit=1'
+        headers = {
+        f'Authorization': f'Bearer {token}',
+        }
+        r = requests.get(url, headers=headers)
+        response = r.json()
+        #print('response ', response)
+        popularity = response['tracks']['items'][0]['popularity']
+        duration = round((response['tracks']['items'][0]['duration_ms']) / 1000)
+        spotify_details = {
+            'popularity': popularity,
+            'duration': duration
+        }
+        return spotify_details
+    except Exception as e:
+        print(f'FUCK CANT GET THIS SHIT WORKING FUCK SPOTIFY {e}')
    
 
 if not os.path.exists(output_folder):
     os.makedirs(output_folder)
 
+def RemoveFile(college_name):
+    try:
+        temp_music_dir = os.listdir('../temp_music')
+        default_underscore = 2
+        working_path = os.path.join('..', 'temp_music')
+        for song in temp_music_dir:
+            get_underscore_song_file = len(song.split('_'))
+            get_underscore_college_name = len(college_name.split('_')) + default_underscore
+            if college_name in  song and get_underscore_song_file == get_underscore_college_name:
+                final_file_path = os.path.join(working_path, song)
+                print(f'removing: {final_file_path} for {college_name}')
+                os.remove(final_file_path)
+    except Exception as e:
+        logger.error(f'Failed to search / remove file. {e}')
 
 def CheckDuplicateSong(table, song):
     conn = None
@@ -130,7 +146,8 @@ def CheckDuplicateSong(table, song):
         logger.error(f'{hostname} {ip_address} {e}')
     finally:
         if conn:
-            conn.close()  
+            conn.close() 
+        
 
         
 #this is ugly af but it works 🤪
@@ -163,13 +180,11 @@ def WriteToTable(song_entry_dict, table_name):
         logger.error(f"{hostname} {ip_address} Failed to write to table: {e}")
     finally:
         conn.close()
+        
 
 
 
-def RemoveFile(audio_file):
-    os.remove(audio_file)
 
-yeet = None
 
 def IdentifySong(audio_file, college_name):
     try:
@@ -202,9 +217,11 @@ def IdentifySong(audio_file, college_name):
                 return
             try:
                 get_song_search = json_song_response.get('track', {}).get('hub', {}).get('providers', [{}])[0].get('actions', [{}])[0].get('uri', None)
+                #print('song serach: ' + get_song_search)
                 if get_song_search:
                     get_song_search = get_song_search.split(":", 2)[-1]
             except (IndexError, KeyError):
+                #print('song search error')
                 get_song_search = None
 
             client_id = spotify_dict['client_id'] 
@@ -231,18 +248,16 @@ def IdentifySong(audio_file, college_name):
                 'duration': duration,
                 'album_art': album_art
             }
-            print(song_entry_dict)
+            #print(song_entry_dict)
             CheckDuplicateSong(college_name, song_entry_dict)
     except Exception as e:
         logger.error(f"{hostname} {ip_address} Failed to identify song {e}")
     finally:
-        RemoveFile(audio_file)
+        RemoveFile(college_name)
 
 
 def StreamTime(college_name, radio_stream):
     while True: 
-        remove_old_audio = ["find", ".", "-type", "f", "-name", f"*{college_name}*", "-delete"]
-        subprocess.run(remove_old_audio, capture_output=True, text=True)
         try:
             r = requests.get(radio_stream, stream=True, verify=False)
             if r.status_code != 200:
