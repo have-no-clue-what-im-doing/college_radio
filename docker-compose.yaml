@@ -14,6 +14,7 @@ services:
     environment:
       - START_INDEX=12
       - END_INDEX=24
+      - SPOTIFY_API=1
   college_stream_3:
     container_name: college-radio-3
     hostname: college-radio-3
@@ -21,6 +22,7 @@ services:
     environment:
       - START_INDEX=24
       - END_INDEX=36
+      - SPOTIFY_API=1
   college_stream_4:
     container_name: college-radio-4
     hostname: college-radio-4
@@ -28,6 +30,7 @@ services:
     environment:
       - START_INDEX=36
       - END_INDEX=48
+      - SPOTIFY_API=2
   college_stream_5:
     container_name: college-radio-5
     hostname: college-radio-5
@@ -35,6 +38,7 @@ services:
     environment:
       - START_INDEX=48
       - END_INDEX=60
+      - SPOTIFY_API=2
   college_stream_6:
     container_name: college-radio-6
     hostname: college-radio-6
@@ -42,3 +46,4 @@ services:
     environment:
       - START_INDEX=60
       - END_INDEX=72
+      - SPOTIFY_API=2
