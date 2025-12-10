@@ -160,6 +160,15 @@ def CheckDuplicateSong(table, song):
             conn.close() 
         
 
+def WriteToStats(college_name, request_type):
+    conn = ConnectToDB()
+    cursor = conn.cursor()
+    try:
+        print("yeet")
+    except:
+        print("fuck")
+
+
         
 #this is ugly af but it works 🤪
 def WriteToTable(song_entry_dict, table_name):
@@ -233,7 +242,7 @@ def IdentifySong(audio_file, college_name):
             album_art = json_song_response.get('track', {}).get('images', {}).get('coverart', None)
             
             if (not artist or not title or not album):
-                logger.error(f"{hostname} {ip_address} Unable to get song details for artist / title / album")
+                logger.error(f"{hostname} {ip_address} Unable to get song details for artist / title / album for {college_name}")
                 return
             try:
                 get_song_search = json_song_response.get('track', {}).get('hub', {}).get('providers', [{}])[0].get('actions', [{}])[0].get('uri', None)
