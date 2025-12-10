@@ -246,6 +246,9 @@ def IdentifySong(audio_file, college_name):
                 if spotify_details:
                     popularity = spotify_details.get('popularity', None)
                     duration = spotify_details.get('duration', None)
+                else:
+                    popularity = None
+                    duration = None
             else:
                 popularity = None
                 duration = None
