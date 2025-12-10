@@ -1,75 +1,75 @@
-﻿College,Table,Stream,Website
-Kent State,kent_state,DEAD,https://blacksquirrelradio.com/radio
-Toledo,toledo,https://c23.radioboss.fm:8099/stream,http://www.wxut.com/
-Bowling Green State,bowling_green_state,https://dvstream2.bgsu.edu/wfal,https://bgfalconmedia.com/
-Wright State,wright_state,https://server.wwsu1069.org/stream/,https://www.wright.edu/wwsu
-Cleveland State,cleveland_state,https://shoutcastwidgets.com/ssl/523/.mp3,https://www.wcsb.org/
-Akron,akron,http://www.streamvortex.com:11300/stream?type=http&nocache=24694,https://www.uakron.edu/schlcomm/clubs-organizations/wzip
-Case Western Reserve ,case_western_reserve,too much work,https://wruw-stream.wruw.org/stream.html
-Dayton,dayton,https://ais-sa1.streamon.fm/7041_48k.aac/playlist.m3u8?listenerId=esTrackblock0556241&aw_0_1st.playerid=esPlayer&aw_0_1st.skey=1729292027,https://udayton.edu/studev/leadership/involvement/student-life/org-radio.php
-Youngstown,youngstown,https://streams.radio.co/sc78d93857/listen,https://rookeryradio.com/
-Xavier,xavier,DEAD,https://mixlr.com/xavier-university-radio/
-Connecticut,connecticut,http://stream.whus.org:8000/whusfm,https://whus.org/
-Yale,yale,https://wybcx-stream.creek.org/studio-1,https://wybc.com/
-Central Connecticut State,central_connecticut_state,https://listen.mixlr.com/d5b2cdc5c115cd1d3484049b0ddf00e7,https://wfcsradio.com/
-Southern Connecticut State,southern_connecticut_state,https://cp13.shoutcheap.com:18181/stream,https://wsinradio.org/
-Quinnipiac,quinnipiac,https://ice64.securenetsystems.net/WQAQ,https://wqaq.com/
-Sacred Heart,sacred_heart,https://wshu-iad.streamguys1.com/wshu-air,https://www.wshu.org/
-New England,new_england,https://wnecfm.radioca.st/stream?type=http,https://wnecfm.org/
-Maine,maine,http://wmeb-stream.maine.edu:8000/wmeb,https://umaine.edu/wmeb/listen-now-2/
-Southen Maine,southern_maine,https://stream.pacificaservice.org:9000/wmpg,https://www.wmpg.org/
-Maine at Augusta,maine_at_augusta,https://das-edge10-live365-dal03.cdnstream.com/a77762,https://www.uma.edu/radio/
-Boston,boston,http://wtbu.bu.edu:1800/,https://sites.bu.edu/wtbu/
-Massachusetts Amherst,massachusetts_amherst,https://usa5.fastcast4u.com/proxy/qernhlca?mp=/1,https://www.umass.edu/wmua/
-Harvard,harvard,https://stream.whrb.org/whrb-he-aac,https://www.whrb.org/
-Northeastern,northeastern,https://audio-edge-qse4n.yyz.g.radiomast.io/dafd1179-5404-4939-9c1c-a014c6964254,https://wrbbradio.org/
-Massachusetts Lowell,massachusetts_lowell,https://securestream.casthost.net:8609/stream,https://www.wuml.org/
-Massachusetts Boston,massachusetts_boston,https://wumb.streamguys1.com/wumb919fast,https://wumb.org/
-Boston College,boston_college,https://stream.wzbc.org/wzbc,https://www.wzbc.org/
-MIT,mit,https://wmbr.org:8002/hi,https://wmbr.org/
-New Hampshire,new_hampshire,http://s9.viastreaming.net:9000/;stream.mp3,https://www.unh.edu/wunh/
-Southern New Hampshire,southern_new_hampshire,DEAD,https://radiosnhu.com/tune-in
-Dartmouth,dartmouth,https://18093.live.streamtheworld.com/DC_RADIOAAC.aac,https://webdcr.com/
-Plymouth State,plymouth_state,https://das-edge17-live365-dal02.cdnstream.com/a55917,https://www.plymouth.edu/wpcr/
-Rutgers,rutgers,https://wrsu-libstrm.radioca.st/stream,https://radio.rutgers.edu/
-Rowan ,rowan,https://wglsradio.rowan.edu/wgls,https://wgls.rowan.edu/
-Montclair State,montclair_state,https://peridot.streamguys1.com:5485/live-mp3,https://wmscradio.com/
-Kean ,kean,http://ic2591.c2343.fast-serv.com/stream,https://www.wknj903.com/
-Fairleigh Dickinson University,fairleigh_dickinson_university,they have multiple audio streams. I'll have to look at this later,https://wfdu.fm/
-Seton Hall,seton_hall,https://d3byg0ij92yqk6.cloudfront.net/streamWSOU11491934270.aac IT'S A M3U8 UUGGGGH. WILL LOOK AT LATER,https://www.wsou.net/index.html
-Princeton,princeton,https://wprb.streamguys1.com/live,https://wprb.com/
-New York,new_york,https://cinema.acs.its.nyu.edu:8000/wnyu128.mp3,https://wnyu.org/
-Columbia,columbia,https://wkcr.streamguys1.com/live,https://www.cc-seas.columbia.edu/wkcr/
-Buffalo,buffalo,http://136.183.9.38:3307/stream/1/,https://wbny.buffalostate.edu/
-Cornell,cornell,https://das-edge11-live365-dal03.cdnstream.com/a25496,https://www.wvbr.com/
-Stony Brook,stony_brook,https://stream.wusb.stonybrook.edu:8092/listen.pl/relay,https://www.wusb.fm/
-CUNY Hunter,cuny_hunter,https://s4.radio.co/s66412ba23/listen,https://www.whcsradio.com/
-Syracuse,syracuse,https://werw.creek.stream/main,https://werwradio.org/
-St. John's,st_johns,https://radio.stjohns.edu:8443/wsjuAAC,https://www.wsjuradio.com/
-RIT,rit,https://streaming.witr.rit.edu/live-aac-96,https://witr.rit.edu/
-Penn State,penn_state,https://n04.radiojar.com/k9uw1tyr7x8uv,https://www.thelion.fm/
-Pittsburgh,pittsburgh,http://audio.wpts.pitt.edu:8000/wpts_live_128s.mp3,https://wpts.pitt.edu/
-Temple,temple,https://ice23.securenetsystems.net/WHIP,https://www.whipradiotu.com/
-Pennsylvania,pennsylvania,https://shaincast.caster.fm:35011/listen.mp3,https://wqhs.upenn.edu/
-Villanova,villanova,https://securestream.casthost.net:8159/stream,https://wxvu.org/
-Rhode Island,rhode_island,http://131.128.158.230:8000/wriu-fm,https://wriu.org/
-Brown,brown,https://listen.bsrlive.com/bsrmp3,https://www.bsrlive.com/
-Vermont,vermont,http://icecast.uvm.edu:8005/wruv_fm_128,http://wruv.org/
-Illinois at Urbana Champaign,illinois_urbana_champaign,https://ice64.securenetsystems.net/WPGUFM,https://wpgu.com/
-Iillinois at Chicago,illinois_chicago,https://us2.maindigitalstream.com/ssl/UIC,https://www.uicradio.net/
-Northwestern,northwestern,https://n14.rcs.revma.com/w4pmmfkdx4zuv,https://wnur.org/
-DuPage,dupage,wdcb-ice.streamguys1.com/mobile-AAC,https://wdcb.org/
-DePaul,dupaul,https://ice26.securenetsystems.net/RADIODEPAUL,https://radiodepaul.com/
-Illinois State,illinois_state,https://15693.live.streamtheworld.com/WZNDFM.mp3,https://wznd.com/
-Chicago,chicago,https://whpk-stream.uchicago.edu/stream,https://whpk.org/
-Loyola Chicago,loyola_chicago,https://wluw.streamguys1.com/stream.mp3,https://wluw.org/
-Purdue,purdue,https://cdn-embed.tunein.com/resources/media/blank.mp3,https://www.wccrpurdue.org/
-Indiana,indiana,https://ice25.securenetsystems.net/WIUXLP,https://www.wiux.org/
-Ball State,ball_state,https://s6.reliastream.com/proxy/ballstat?mp=/stream,https://wcrd.net/
-Vincennes,vincennes,https://wvub.streamguys1.com/live-mp3,https://www.wvub.org/
-Notre Dame,notre_dame,https://s4.radio.co/s49f365ee3/listen,https://wvfi.nd.edu/
-Iowa,iowa,https://krui.student-services.uiowa.edu:8000/listen,https://krui.fm/listen/
-Iowa State,iowa_state,http://kure-network.stuorg.iastate.edu:8000/KUREBroadcast,https://kure.stuorg.iastate.edu/
-Kanas,kansas,https://listen.mixlr.com/3ad882f8368477dc9e463ba587743eb4,https://kjhk.org/web/
-Kansas State,kansas_state,https://s.radiowave.io/ksdb.opus,https://radiowave.io/s/KSDB/overview
-Wichita State,,,
+﻿College,Table,Stream,Website,
+Kent State,kent_state,DEAD,https://blacksquirrelradio.com/radio,
+Toledo,toledo,https://c23.radioboss.fm:8099/stream,http://www.wxut.com/,
+Bowling Green State,bowling_green_state,https://dvstream2.bgsu.edu/wfal,https://bgfalconmedia.com/,
+Wright State,wright_state,https://server.wwsu1069.org/stream/,https://www.wright.edu/wwsu,
+Cleveland State,cleveland_state,https://shoutcastwidgets.com/ssl/523/.mp3,https://www.wcsb.org/,
+Akron,akron,http://www.streamvortex.com:11300/stream?type=http&nocache=24694,https://www.uakron.edu/schlcomm/clubs-organizations/wzip,
+Case Western Reserve ,case_western_reserve,too much work,https://wruw-stream.wruw.org/stream.html,
+Dayton,dayton,https://ais-sa1.streamon.fm/7041_48k.aac/playlist.m3u8?listenerId=esTrackblock0556241&aw_0_1st.playerid=esPlayer&aw_0_1st.skey=1729292027,https://udayton.edu/studev/leadership/involvement/student-life/org-radio.php,
+Youngstown,youngstown,https://streams.radio.co/sc78d93857/listen,https://rookeryradio.com/,
+Xavier,xavier,DEAD,https://mixlr.com/xavier-university-radio/,
+Connecticut,connecticut,http://stream.whus.org:8000/whusfm,https://whus.org/,
+Yale,yale,https://wybcx-stream.creek.org/studio-1,https://wybc.com/,
+Central Connecticut State,central_connecticut_state,https://listen.mixlr.com/d5b2cdc5c115cd1d3484049b0ddf00e7,https://wfcsradio.com/,
+Southern Connecticut State,southern_connecticut_state,https://cp13.shoutcheap.com:18181/stream,https://wsinradio.org/,
+Quinnipiac,quinnipiac,https://ice64.securenetsystems.net/WQAQ,https://wqaq.com/,
+Sacred Heart,sacred_heart,https://wshu-iad.streamguys1.com/wshu-air,https://www.wshu.org/,
+New England,new_england,https://wnecfm.radioca.st/stream?type=http,https://wnecfm.org/,
+Maine,maine,http://wmeb-stream.maine.edu:8000/wmeb,https://umaine.edu/wmeb/listen-now-2/,
+Southen Maine,southern_maine,https://stream.pacificaservice.org:9000/wmpg,https://www.wmpg.org/,
+Maine at Augusta,maine_at_augusta,https://das-edge10-live365-dal03.cdnstream.com/a77762,https://www.uma.edu/radio/,
+Boston,boston,http://wtbu.bu.edu:1800/,https://sites.bu.edu/wtbu/,
+Massachusetts Amherst,massachusetts_amherst,https://usa5.fastcast4u.com/proxy/qernhlca?mp=/1,https://www.umass.edu/wmua/,
+Harvard,harvard,https://stream.whrb.org/whrb-he-aac,https://www.whrb.org/,
+Northeastern,northeastern,https://audio-edge-qse4n.yyz.g.radiomast.io/dafd1179-5404-4939-9c1c-a014c6964254,https://wrbbradio.org/,
+Massachusetts Lowell,massachusetts_lowell,https://securestream.casthost.net:8609/stream,https://www.wuml.org/,
+Massachusetts Boston,massachusetts_boston,https://wumb.streamguys1.com/wumb919fast,https://wumb.org/,
+Boston College,boston_college,https://stream.wzbc.org/wzbc,https://www.wzbc.org/,
+MIT,mit,https://wmbr.org:8002/hi,https://wmbr.org/,
+New Hampshire,new_hampshire,http://s9.viastreaming.net:9000/,stream.mp3,https://www.unh.edu/wunh/
+Southern New Hampshire,southern_new_hampshire,DEAD,https://radiosnhu.com/tune-in,
+Dartmouth,dartmouth,https://18093.live.streamtheworld.com/DC_RADIOAAC.aac,https://webdcr.com/,
+Plymouth State,plymouth_state,https://das-edge17-live365-dal02.cdnstream.com/a55917,https://www.plymouth.edu/wpcr/,
+Rutgers,rutgers,https://wrsu-libstrm.radioca.st/stream,https://radio.rutgers.edu/,
+Rowan ,rowan,https://wglsradio.rowan.edu/wgls,https://wgls.rowan.edu/,
+Montclair State,montclair_state,https://peridot.streamguys1.com:5485/live-mp3,https://wmscradio.com/,
+Kean ,kean,http://ic2591.c2343.fast-serv.com/stream,https://www.wknj903.com/,
+Fairleigh Dickinson University,fairleigh_dickinson_university,they have multiple audio streams. I'll have to look at this later,https://wfdu.fm/,
+Seton Hall,seton_hall,https://d3byg0ij92yqk6.cloudfront.net/streamWSOU11491934270.aac IT'S A M3U8 UUGGGGH. WILL LOOK AT LATER,https://www.wsou.net/index.html,
+Princeton,princeton,https://wprb.streamguys1.com/live,https://wprb.com/,
+New York,new_york,https://cinema.acs.its.nyu.edu:8000/wnyu128.mp3,https://wnyu.org/,
+Columbia,columbia,https://wkcr.streamguys1.com/live,https://www.cc-seas.columbia.edu/wkcr/,
+Buffalo,buffalo,http://136.183.9.38:3307/stream/1/,https://wbny.buffalostate.edu/,
+Cornell,cornell,https://das-edge11-live365-dal03.cdnstream.com/a25496,https://www.wvbr.com/,
+Stony Brook,stony_brook,https://stream.wusb.stonybrook.edu:8092/listen.pl/relay,https://www.wusb.fm/,
+CUNY Hunter,cuny_hunter,https://s4.radio.co/s66412ba23/listen,https://www.whcsradio.com/,
+Syracuse,syracuse,https://werw.creek.stream/main,https://werwradio.org/,
+St. John's,st_johns,https://radio.stjohns.edu:8443/wsjuAAC,https://www.wsjuradio.com/,
+RIT,rit,https://streaming.witr.rit.edu/live-aac-96,https://witr.rit.edu/,
+Penn State,penn_state,https://n04.radiojar.com/k9uw1tyr7x8uv,https://www.thelion.fm/,
+Pittsburgh,pittsburgh,http://audio.wpts.pitt.edu:8000/wpts_live_128s.mp3,https://wpts.pitt.edu/,
+Temple,temple,https://ice23.securenetsystems.net/WHIP,https://www.whipradiotu.com/,
+Pennsylvania,pennsylvania,https://shaincast.caster.fm:35011/listen.mp3,https://wqhs.upenn.edu/,
+Villanova,villanova,https://securestream.casthost.net:8159/stream,https://wxvu.org/,
+Rhode Island,rhode_island,http://131.128.158.230:8000/wriu-fm,https://wriu.org/,
+Brown,brown,https://listen.bsrlive.com/bsrmp3,https://www.bsrlive.com/,
+Vermont,vermont,http://icecast.uvm.edu:8005/wruv_fm_128,http://wruv.org/,
+Illinois at Urbana Champaign,illinois_urbana_champaign,https://ice64.securenetsystems.net/WPGUFM,https://wpgu.com/,
+Iillinois at Chicago,illinois_chicago,https://us2.maindigitalstream.com/ssl/UIC,https://www.uicradio.net/,
+Northwestern,northwestern,https://n14.rcs.revma.com/w4pmmfkdx4zuv,https://wnur.org/,
+DuPage,dupage,wdcb-ice.streamguys1.com/mobile-AAC,https://wdcb.org/,
+DePaul,dupaul,https://ice26.securenetsystems.net/RADIODEPAUL,https://radiodepaul.com/,
+Illinois State,illinois_state,https://15693.live.streamtheworld.com/WZNDFM.mp3,https://wznd.com/,
+Chicago,chicago,https://whpk-stream.uchicago.edu/stream,https://whpk.org/,
+Loyola Chicago,loyola_chicago,https://wluw.streamguys1.com/stream.mp3,https://wluw.org/,
+Purdue,purdue,https://cdn-embed.tunein.com/resources/media/blank.mp3,https://www.wccrpurdue.org/,
+Indiana,indiana,https://ice25.securenetsystems.net/WIUXLP,https://www.wiux.org/,
+Ball State,ball_state,https://s6.reliastream.com/proxy/ballstat?mp=/stream,https://wcrd.net/,
+Vincennes,vincennes,https://wvub.streamguys1.com/live-mp3,https://www.wvub.org/,
+Notre Dame,notre_dame,https://s4.radio.co/s49f365ee3/listen,https://wvfi.nd.edu/,
+Iowa,iowa,https://krui.student-services.uiowa.edu:8000/listen,https://krui.fm/listen/,
+Iowa State,iowa_state,http://kure-network.stuorg.iastate.edu:8000/KUREBroadcast,https://kure.stuorg.iastate.edu/,
+Kanas,kansas,https://listen.mixlr.com/9da878cb9b12cf27153c0a463e0a1346,https://kjhk.org/web/,
+Kansas State,kansas_state,https://s.radiowave.io/ksdb.opus,https://radiowave.io/s/KSDB/overview,
+Wichita State,,,,

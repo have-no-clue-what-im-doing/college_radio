@@ -1,6 +1,6 @@
 import requests
 import logging
-import logging.handlers
+#import logging.handlers
 import socket
 import os
 from datetime import datetime, timedelta, timezone
@@ -24,10 +24,10 @@ ip_address = requests.get("https://ipecho.net/plain").text
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-syslog_handler = logging.handlers.SysLogHandler(address=('log.broderic.pro', 514))  
+console_handler = logging.StreamHandler()
 formatter = logging.Formatter('%(levelname)s - %(message)s')
-syslog_handler.setFormatter(formatter)
-logger.addHandler(syslog_handler)
+console_handler.setFormatter(formatter)
+logger.addHandler(console_handler)
 
 
 # read my yaml file:
@@ -40,6 +40,17 @@ with open('./config.yaml', 'r') as file:
 college_dict = yaml_config['college_dict']
 database_dict = yaml_config['database']
 spotify_dict = yaml_config['spotify']
+proxy_string = yaml_config['proxy']
+
+
+
+if proxy_string:
+    proxies = {
+        'http': f'http://{proxy_string}',
+        'https': f'http://{proxy_string}'
+    }
+else:
+    proxies = None
 
 output_folder = '../temp_music'
 
@@ -101,7 +112,7 @@ def RemoveFile(college_name):
             get_underscore_college_name = len(college_name.split('_')) + default_underscore
             if college_name in  song and get_underscore_song_file == get_underscore_college_name:
                 final_file_path = os.path.join(working_path, song)
-                print(f'removing: {final_file_path} for {college_name}')
+                #print(f'removing: {final_file_path} for {college_name}')
                 os.remove(final_file_path)
     except Exception as e:
         logger.error(f'Failed to search / remove file. {e}')
@@ -188,7 +199,10 @@ def WriteToTable(song_entry_dict, table_name):
 
 def IdentifySong(audio_file, college_name):
     try:
-        song_response = subprocess.run(['songrec', 'audio-file-to-recognized-song', audio_file], capture_output=True, text=True)
+        env = os.environ.copy()
+        if proxy_string:
+            env['HTTPS_PROXY'] = f'http://{proxy_string}'
+        song_response = subprocess.run(['songrec', 'audio-file-to-recognized-song', audio_file], capture_output=True, text=True, env=env)
         if not song_response.stdout:
             logger.error(f'{hostname} {ip_address} Could not get valid response from songrec command for {college_name}')
             time.sleep(15)
@@ -264,6 +278,8 @@ def StreamTime(college_name, radio_stream):
                 logger.error(f"{hostname} {ip_address} Not getting 200 response from {college_name} stream. Will try again in 5 minutes")
                 time.sleep(300)
                 continue
+            # if r.status_code == 200:
+            #     logger.info(f"{college_name} Response headers: {dict(r.headers)}")
             audio_id = college_name + '_' + datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
             file_path = os.path.join(output_folder, f'{audio_id}.mp3')
             start_time = time.time()

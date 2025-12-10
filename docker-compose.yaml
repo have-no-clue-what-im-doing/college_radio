@@ -20,6 +20,8 @@ services:
     environment:
       - START_INDEX=24
       - END_INDEX=36
+      # - HTTPS_PROXY=http://bhiewudz-rotate:0p0zyoj6uyag@p.webshare.io:80
+      # - HTTP_PROXY=http://bhiewudz-rotate:0p0zyoj6uyag@p.webshare.io:80
   college_stream_4:
     container_name: college-radio-4
     hostname: college-radio-4
