@@ -215,18 +215,24 @@ def IdentifySong(audio_file, college_name):
         if not json_song_response.get('matches'):
             logger.error(f"{hostname} {ip_address} Unable to identify song for {college_name}")
         else:
-            #print(json_song_response)
             epoch = round(time.time())
-            local_timezone = timezone(timedelta(hours=-4))
+            local_timezone = timezone(timedelta(hours=-5))
             entry_date = datetime.now(local_timezone).strftime('%Y-%m-%d %H:%M:%S')
             college = college_name
+            
             artist = json_song_response.get('track', {}).get('subtitle', None)
             title = json_song_response.get('track', {}).get('title', None)
-            album = json_song_response.get('track', {}).get('sections', [{}])[0].get('metadata', [{}])[0].get('text', None)
-            release_date = json_song_response.get('track', {}).get('sections', [{}])[0].get('metadata', [{}])[2].get('text', None)
+    
+            sections = json_song_response.get('track', {}).get('sections', [])
+            metadata = sections[0].get('metadata', []) if sections else []
+            
+            album = metadata[0].get('text', None) if len(metadata) > 0 else None
+            release_date = metadata[2].get('text', None) if len(metadata) > 2 else None
+            
             genre = json_song_response.get('track', {}).get('genres', {}).get('primary', None)
             album_art = json_song_response.get('track', {}).get('images', {}).get('coverart', None)
-            if (artist or title or album) == None:
+            
+            if (not artist or not title or not album):
                 logger.error(f"{hostname} {ip_address} Unable to get song details for artist / title / album")
                 return
             try:
@@ -237,9 +243,8 @@ def IdentifySong(audio_file, college_name):
             except (IndexError, KeyError):
                 #print('song search error')
                 get_song_search = None
-
-            client_id = spotify_dict['client_id'] 
-            client_secret = spotify_dict['client_secret']  #fixed :)
+            client_id = spotify_dict[f'client_id_{spotify_api}'] 
+            client_secret = spotify_dict[f'client_secret_{spotify_api}']  #fixed :)
 
             if get_song_search:
                 spotify_details = GetSpotifyDetails(GetToken(client_id, client_secret), get_song_search)
@@ -269,7 +274,7 @@ def IdentifySong(audio_file, college_name):
             #print(song_entry_dict)
             CheckDuplicateSong(college_name, song_entry_dict)
     except Exception as e:
-        logger.error(f"{hostname} {ip_address} Failed to identify song {e}")
+        logger.error(f"{hostname} {ip_address} Failed to identify song for {college_name} Error: {e}")
     finally:
         RemoveFile(college_name)
 
@@ -305,7 +310,9 @@ def StreamTime(college_name, radio_stream):
 
 
 #StreamTime('ohio_state', college_dict['ohio_state'])
-            
+
+
+spotify_api = int(os.getenv("SPOTIFY_API", "1"))
 
 start_index = int(os.getenv("START_INDEX", "0"))
 end_index = int(os.getenv("END_INDEX", "5"))

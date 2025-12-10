@@ -6,6 +6,7 @@ services:
     environment:
       - START_INDEX=0
       - END_INDEX=12
+      - SPOTIFY_API=1
   college_stream_2:
     container_name: college-radio-2
     hostname: college-radio-2
