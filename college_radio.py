@@ -391,7 +391,6 @@ def StreamTime(college_name, radio_stream):
                     'hostname': hostname,
                     'college': college_name,
                     'message': 'Did not receive a 200 response from radio stream',
-                    'error': str(e)
                 }))
                 time.sleep(300)
                 continue
