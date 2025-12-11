@@ -25,7 +25,7 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 console_handler = logging.StreamHandler()
-formatter = logging.Formatter('%(levelname)s - %(message)s')
+formatter = logging.Formatter('%(message)s')
 console_handler.setFormatter(formatter)
 logger.addHandler(console_handler)
 
@@ -64,22 +64,32 @@ def ConnectToDB():
         port = database_dict['port'] 
     )
 
-def GetToken(client_id, client_secret):
-    url = 'https://accounts.spotify.com/api/token'
-    headers = {
-        'Content-Type': 'application/x-www-form-urlencoded'
-    }
-    data = { 
-        'grant_type': 'client_credentials',
-        'client_id': f'{client_id}',
-        'client_secret': f'{client_secret}'
-    }
-    r = requests.post(url, data=data, headers=headers)
-    response = r.json()
-    return response['access_token']
+def GetToken(client_id, client_secret, college_name):
+    try:
+        url = 'https://accounts.spotify.com/api/token'
+        headers = {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+        data = { 
+            'grant_type': 'client_credentials',
+            'client_id': f'{client_id}',
+            'client_secret': f'{client_secret}'
+        }
+        r = requests.post(url, data=data, headers=headers)
+        response = r.json()
+        return response['access_token']
+    except Exception as e:
+        logger.error(json.dumps({
+                    'type': 'error',
+                    'error_code': 'SPOTIFY_API_FAILED',
+                    'hostname': hostname,
+                    'college': college_name,
+                    'message': 'Unable to retrieve Spotify API token',
+                    'error': str(e)
+                }))
 
 
-def GetSpotifyDetails(token, song_title):
+def GetSpotifyDetails(token, song_title, college_name):
     try:
         url = f'https://api.spotify.com/v1/search?q={song_title}&type=track&limit=1'
         headers = {
@@ -96,7 +106,14 @@ def GetSpotifyDetails(token, song_title):
         }
         return spotify_details
     except Exception as e:
-        print(f'FUCK CANT GET THIS SHIT WORKING FUCK SPOTIFY {e}')
+        logger.error(json.dumps({
+            'type': 'error',
+            'error_code': 'SPOTIFY_API_FAILED',
+            'hostname': hostname,
+            'college': college_name,
+            'message': 'Request to Spotify API failed',
+            'error': str(e)
+        }))
    
 
 if not os.path.exists(output_folder):
@@ -115,7 +132,14 @@ def RemoveFile(college_name):
                 #print(f'removing: {final_file_path} for {college_name}')
                 os.remove(final_file_path)
     except Exception as e:
-        logger.error(f'Failed to search / remove file. {e}')
+        logger.error(json.dumps({
+            'type': 'error',
+            'error_code': 'REMOVE_OLD_FILE_FAILED',
+            'hostname': hostname,
+            'college': college_name,
+            'message': 'Failed to search / remove file',
+            'error': str(e)
+        }))
 
 def CheckDuplicateSong(college_name, song):
     conn = None
@@ -130,10 +154,24 @@ def CheckDuplicateSong(college_name, song):
             title = data[0][0]
             if title != song['title']:
                 WriteToTable(song)
-                logger.info(f'{hostname}  College: {college_name} Title: {song["title"]} Artist: {song["artist"]} Year: {song["release_date"]}')
+                logger.info(json.dumps({
+                    'type': 'info',
+                    'hostname': hostname,
+                    'college': college_name,
+                    'title': song["title"],
+                    'artist': song["artist"],
+                    'year': song["release_date"]
+                    }))
         else:
             WriteToTable(song)
-            logger.info(f'{hostname}  College: {college_name} Title: {song["title"]} Artist: {song["artist"]} Year: {song["release_date"]}')
+            logger.info(json.dumps({
+                    'type': 'info',
+                    'hostname': hostname,
+                    'college': college_name,
+                    'title': song["title"],
+                    'artist': song["artist"],
+                    'year': song["release_date"]
+                    }))
         
         conn.commit()  
     except Exception as e:
@@ -142,14 +180,45 @@ def CheckDuplicateSong(college_name, song):
         if conn:
             conn.close() 
         
-
+# 'type="error" hostname="{hostname}" college="{college_name}" text="Unable to write success stat to table" error="{e}"')
 def WriteToStats(college_name, request_type):
     conn = ConnectToDB()
     cursor = conn.cursor()
     try:
-        print("yeet")
-    except:
-        print("fuck")
+        if request_type == "success":
+            cursor.execute(
+                '''
+                INSERT INTO stats (college, requests, failed) 
+                VALUES (%s, 1, 0)
+                ON CONFLICT (college) 
+                DO UPDATE SET requests = stats.requests + 1
+                ''',
+                (college_name,)
+            )
+        elif request_type == "fail":
+            cursor.execute(
+                '''
+                INSERT INTO stats (college, requests, failed) 
+                VALUES (%s, 1, 1)
+                ON CONFLICT (college) 
+                DO UPDATE SET requests = stats.requests + 1, failed = stats.failed + 1
+                ''',
+                (college_name,)
+            )
+        conn.commit()
+    except Exception as e:
+        logger.error(json.dumps({
+            'type': 'error',
+            'error_code': 'STATS_WRITE_FAILED',
+            'hostname': hostname,
+            'college': college_name,
+            'request_type': request_type,
+            'message': 'Unable to write stat to table',
+            'error': str(e)
+        }))
+    finally:
+        cursor.close()
+        conn.close()
 
 
         
@@ -179,7 +248,14 @@ def WriteToTable(song_entry_dict):
             )
         conn.commit()
     except Exception as e:
-        logger.error(f"{hostname}  Failed to write to table: {e}")
+        logger.error(json.dumps({
+                    'type': 'error',
+                    'error_code': 'SONG_WRITE_FAIL',
+                    'hostname': hostname,
+                    'college': song_entry_dict['college'],
+                    'message': 'Failed to write song to table',
+                    'error': str(e)
+                }))
     finally:
         conn.close()
         
@@ -195,16 +271,37 @@ def IdentifySong(audio_file, college_name):
             env['HTTPS_PROXY'] = f'http://{proxy_string}'
         song_response = subprocess.run(['songrec', 'audio-file-to-recognized-song', audio_file], capture_output=True, text=True, env=env)
         if not song_response.stdout:
-            logger.error(f'{hostname}  Could not get valid response from songrec command for {college_name}')
+            logger.error(json.dumps({
+                    'type': 'error',
+                    'error_code': 'SONGREC_FAIL',
+                    'hostname': hostname,
+                    'college': college_name,
+                    'message': 'No response from songrec',
+                    'error': str(e)
+                }))
             time.sleep(15)
             return
         try:
             json_song_response = json.loads(song_response.stdout)
         except json.JSONDecodeError:
-            logger.error(f"{hostname}  Could not parse json for {college_name}")
+            logger.error(json.dumps({
+                    'type': 'error',
+                    'error_code': 'SONGREC_FAIL',
+                    'hostname': hostname,
+                    'college': college_name,
+                    'message': 'Unable to parse json from songrec reply',
+                    'error': str(e)
+                }))
             return
         if not json_song_response.get('matches'):
-            logger.error(f"{hostname}  Unable to identify song for {college_name}")
+            logger.error(json.dumps({
+                    'type': 'error',
+                    'error_code': 'SONGREC_FAIL',
+                    'hostname': hostname,
+                    'college': college_name,
+                    'message': 'Songrec failed to identify the song',
+                    'error': str(e)
+                }))
         else:
             epoch = round(time.time())
             local_timezone = timezone(timedelta(hours=-5))
@@ -221,10 +318,17 @@ def IdentifySong(audio_file, college_name):
             release_date = metadata[2].get('text', None) if len(metadata) > 2 else None
             
             genre = json_song_response.get('track', {}).get('genres', {}).get('primary', None)
-            album_art = json_song_response.get('track', {}).get('images', {}).get('coverart', None)
+            #album_art = json_song_response.get('track', {}).get('images', {}).get('coverart', None)
             
             if (not artist or not title or not album):
-                logger.error(f"{hostname}  Unable to get song details for artist / title / album for {college_name}")
+                logger.error(json.dumps({
+                    'type': 'error',
+                    'error_code': 'SONGREC_FAIL',
+                    'hostname': hostname,
+                    'college': college_name,
+                    'message': 'Songrec reply did not give title / artist / album',
+                    'error': str(e)
+                }))
                 return
             try:
                 get_song_search = json_song_response.get('track', {}).get('hub', {}).get('providers', [{}])[0].get('actions', [{}])[0].get('uri', None)
@@ -238,7 +342,7 @@ def IdentifySong(audio_file, college_name):
             client_secret = spotify_dict[f'client_secret_{spotify_api}']  #fixed :)
 
             if get_song_search:
-                spotify_details = GetSpotifyDetails(GetToken(client_id, client_secret), get_song_search)
+                spotify_details = GetSpotifyDetails(GetToken(client_id, client_secret, college_name), get_song_search, college_name)
                 if spotify_details:
                     popularity = spotify_details.get('popularity', None)
                     duration = spotify_details.get('duration', None)
@@ -259,13 +363,19 @@ def IdentifySong(audio_file, college_name):
                 'release_date': release_date,
                 'genre': genre,
                 'popularity': popularity,
-                'duration': duration,
-                'album_art': album_art
+                'duration': duration
             }
             #print(song_entry_dict)
             CheckDuplicateSong(college_name, song_entry_dict)
     except Exception as e:
-        logger.error(f"{hostname}  Failed to identify song for {college_name} Error: {e}")
+        logger.error(json.dumps({
+                    'type': 'error',
+                    'error_code': 'SONGREC_FAIL',
+                    'hostname': hostname,
+                    'college': college_name,
+                    'message': 'Songrec failed to retrieve song details',
+                    'error': str(e)
+                }))
     finally:
         RemoveFile(college_name)
 
@@ -275,7 +385,14 @@ def StreamTime(college_name, radio_stream):
         try:
             r = requests.get(radio_stream, stream=True, verify=False)
             if r.status_code != 200:
-                logger.error(f"{hostname}  Not getting 200 response from {college_name} stream. Will try again in 5 minutes")
+                logger.error(json.dumps({
+                    'type': 'error',
+                    'error_code': 'NO_HTTP_200',
+                    'hostname': hostname,
+                    'college': college_name,
+                    'message': 'Did not receive a 200 response from radio stream',
+                    'error': str(e)
+                }))
                 time.sleep(300)
                 continue
             # if r.status_code == 200:
@@ -294,7 +411,14 @@ def StreamTime(college_name, radio_stream):
             IdentifySong(file_path, college_name)
         
         except Exception as e:
-            print(f"Error: {e}")
+            logger.error(json.dumps({
+                    'type': 'error',
+                    'error_code': 'HTTP_REQUESTS_FAIL',
+                    'hostname': hostname,
+                    'college': college_name,
+                    'message': 'Failed to make general request to radio stream',
+                    'error': str(e)
+                }))
             time.sleep(2)  
         finally:
             r.close()  
