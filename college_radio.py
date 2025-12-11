@@ -117,40 +117,23 @@ def RemoveFile(college_name):
     except Exception as e:
         logger.error(f'Failed to search / remove file. {e}')
 
-def CheckDuplicateSong(table, song):
+def CheckDuplicateSong(college_name, song):
     conn = None
     try:
         conn = ConnectToDB()
         c = conn.cursor()
-        c.execute(
-            f'''
-            CREATE TABLE IF NOT EXISTS {table} (
-                id SERIAL PRIMARY KEY,
-                epoch BIGINT,
-                entry_date TIMESTAMP,
-                college VARCHAR(255),
-                artist VARCHAR(255),
-                title VARCHAR(255),
-                album VARCHAR(255),
-                genre VARCHAR(255),
-                release_date INTEGER,
-                popularity INTEGER,
-                duration INTEGER,
-                album_art TEXT
-            )
-            '''
-        )
-        query_last_song = f'SELECT title FROM {table} ORDER BY id DESC LIMIT 1'
+
+        query_last_song = f'SELECT title FROM all_colleges WHERE college = \'{college_name}\' ORDER BY id DESC LIMIT 1'
         c.execute(query_last_song)
         data = c.fetchall()
         if data:
             title = data[0][0]
             if title != song['title']:
-                WriteToTable(song, table)
-                logger.info(f'{hostname}  Table: {table} Title: {song["title"]} Artist: {song["artist"]} Year: {song["release_date"]}')
+                WriteToTable(song)
+                logger.info(f'{hostname}  College: {college_name} Title: {song["title"]} Artist: {song["artist"]} Year: {song["release_date"]}')
         else:
-            WriteToTable(song, table)
-            logger.info(f'{hostname}  Table: {table} Title: {song["title"]} Artist: {song["artist"]} Year: {song["release_date"]}')
+            WriteToTable(song)
+            logger.info(f'{hostname}  College: {college_name} Title: {song["title"]} Artist: {song["artist"]} Year: {song["release_date"]}')
         
         conn.commit()  
     except Exception as e:
@@ -171,15 +154,15 @@ def WriteToStats(college_name, request_type):
 
         
 #this is ugly af but it works 🤪
-def WriteToTable(song_entry_dict, table_name):
+def WriteToTable(song_entry_dict):
     conn = ConnectToDB()
     cursor = conn.cursor()
     try:
         cursor.execute(
             
                 f'''
-                INSERT INTO {table_name} (epoch, entry_date, college, artist, title, album, genre, release_date, popularity, duration, album_art) 
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                INSERT INTO all_colleges (epoch, entry_date, college, artist, title, album, genre, release_date, popularity, duration) 
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 ''',
                 (
                     song_entry_dict['epoch'], 
@@ -191,8 +174,7 @@ def WriteToTable(song_entry_dict, table_name):
                     song_entry_dict['genre'],
                     song_entry_dict['release_date'],
                     song_entry_dict['popularity'],
-                    song_entry_dict['duration'],
-                    song_entry_dict['album_art']
+                    song_entry_dict['duration']
                 )
             )
         conn.commit()
