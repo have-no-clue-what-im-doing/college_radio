@@ -247,7 +247,9 @@ def WriteToTable(song_entry_dict):
                 )
             )
         conn.commit()
+        WriteToStats(song_entry_dict['college'], 'success')
     except Exception as e:
+        WriteToStats(song_entry_dict['college'], 'fail')
         logger.error(json.dumps({
                     'type': 'error',
                     'error_code': 'SONG_WRITE_FAIL',
@@ -257,6 +259,7 @@ def WriteToTable(song_entry_dict):
                     'error': str(e)
                 }))
     finally:
+        cursor.close()
         conn.close()
         
 
@@ -271,6 +274,7 @@ def IdentifySong(audio_file, college_name):
             env['HTTPS_PROXY'] = f'http://{proxy_string}'
         song_response = subprocess.run(['songrec', 'audio-file-to-recognized-song', audio_file], capture_output=True, text=True, env=env)
         if not song_response.stdout:
+            WriteToStats(college_name, 'fail')
             logger.error(json.dumps({
                     'type': 'error',
                     'error_code': 'SONGREC_FAIL',
@@ -283,6 +287,7 @@ def IdentifySong(audio_file, college_name):
         try:
             json_song_response = json.loads(song_response.stdout)
         except json.JSONDecodeError:
+            WriteToStats(college_name, 'fail')
             logger.error(json.dumps({
                     'type': 'error',
                     'error_code': 'SONGREC_FAIL',
@@ -292,6 +297,7 @@ def IdentifySong(audio_file, college_name):
                 }))
             return
         if not json_song_response.get('matches'):
+            WriteToStats(college_name, 'fail')
             logger.error(json.dumps({
                     'type': 'error',
                     'error_code': 'SONGREC_FAIL',
@@ -318,6 +324,7 @@ def IdentifySong(audio_file, college_name):
             #album_art = json_song_response.get('track', {}).get('images', {}).get('coverart', None)
             
             if (not artist or not title or not album):
+                WriteToStats(college_name, 'fail')
                 logger.error(json.dumps({
                     'type': 'error',
                     'error_code': 'SONGREC_FAIL',
@@ -364,6 +371,7 @@ def IdentifySong(audio_file, college_name):
             #print(song_entry_dict)
             CheckDuplicateSong(college_name, song_entry_dict)
     except Exception as e:
+        WriteToStats(college_name, 'fail')
         logger.error(json.dumps({
                     'type': 'error',
                     'error_code': 'SONGREC_FAIL',
