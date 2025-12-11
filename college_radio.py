@@ -277,7 +277,6 @@ def IdentifySong(audio_file, college_name):
                     'hostname': hostname,
                     'college': college_name,
                     'message': 'No response from songrec',
-                    'error': str(e)
                 }))
             time.sleep(15)
             return
@@ -290,7 +289,6 @@ def IdentifySong(audio_file, college_name):
                     'hostname': hostname,
                     'college': college_name,
                     'message': 'Unable to parse json from songrec reply',
-                    'error': str(e)
                 }))
             return
         if not json_song_response.get('matches'):
@@ -300,7 +298,6 @@ def IdentifySong(audio_file, college_name):
                     'hostname': hostname,
                     'college': college_name,
                     'message': 'Songrec failed to identify the song',
-                    'error': str(e)
                 }))
         else:
             epoch = round(time.time())
@@ -327,7 +324,6 @@ def IdentifySong(audio_file, college_name):
                     'hostname': hostname,
                     'college': college_name,
                     'message': 'Songrec reply did not give title / artist / album',
-                    'error': str(e)
                 }))
                 return
             try:
