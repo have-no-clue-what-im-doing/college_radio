@@ -7,6 +7,14 @@ services:
       - START_INDEX=0
       - END_INDEX=12
       - SPOTIFY_API=1
+    logging:
+      driver: loki
+      options:
+        loki-url: "10.10.13.17"
+        loki-batch-size: "500"
+        loki-timeout: "10s"
+        loki-retries: "2"
+        labels: "app=collage_radio,container=collage-radio-1"
   college_stream_2:
     container_name: college-radio-2
     hostname: college-radio-2
