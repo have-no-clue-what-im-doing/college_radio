@@ -387,7 +387,7 @@ def IdentifySong(audio_file, college_name):
 def StreamTime(college_name, radio_stream):
     while True: 
         try:
-            r = requests.get(radio_stream, stream=True, verify=False)
+            r = requests.get(radio_stream, stream=True, verify=False, timeout=15)
             if r.status_code != 200:
                 logger.error(json.dumps({
                     'type': 'error',
