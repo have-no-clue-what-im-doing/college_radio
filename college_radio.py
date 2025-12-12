@@ -95,7 +95,7 @@ def GetSpotifyDetails(token, song_title, college_name):
         headers = {
         f'Authorization': f'Bearer {token}',
         }
-        r = requests.get(url, headers=headers)
+        r = requests.get(url, headers=headers, timeout=5)
         response = r.json()
         #print('response ', response)
         popularity = response['tracks']['items'][0]['popularity']
