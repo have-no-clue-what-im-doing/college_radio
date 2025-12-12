@@ -14,7 +14,7 @@ services:
         loki-batch-size: "500"
         loki-timeout: "10s"
         loki-retries: "2"
-        labels: "app=collage_radio,container=collage-radio-1"
+        labels: "app=collage_radio"
   college_stream_2:
     container_name: college-radio-2
     hostname: college-radio-2
@@ -23,6 +23,14 @@ services:
       - START_INDEX=12
       - END_INDEX=24
       - SPOTIFY_API=1
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://10.10.13.17:3100/loki/api/v1/push"
+        loki-batch-size: "500"
+        loki-timeout: "10s"
+        loki-retries: "2"
+        labels: "app=collage_radio"
   college_stream_3:
     container_name: college-radio-3
     hostname: college-radio-3
@@ -31,6 +39,14 @@ services:
       - START_INDEX=24
       - END_INDEX=36
       - SPOTIFY_API=1
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://10.10.13.17:3100/loki/api/v1/push"
+        loki-batch-size: "500"
+        loki-timeout: "10s"
+        loki-retries: "2"
+        labels: "app=collage_radio"
   college_stream_4:
     container_name: college-radio-4
     hostname: college-radio-4
@@ -39,6 +55,14 @@ services:
       - START_INDEX=36
       - END_INDEX=48
       - SPOTIFY_API=2
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://10.10.13.17:3100/loki/api/v1/push"
+        loki-batch-size: "500"
+        loki-timeout: "10s"
+        loki-retries: "2"
+        labels: "app=collage_radio"
   college_stream_5:
     container_name: college-radio-5
     hostname: college-radio-5
@@ -47,6 +71,14 @@ services:
       - START_INDEX=48
       - END_INDEX=60
       - SPOTIFY_API=2
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://10.10.13.17:3100/loki/api/v1/push"
+        loki-batch-size: "500"
+        loki-timeout: "10s"
+        loki-retries: "2"
+        labels: "app=collage_radio"
   college_stream_6:
     container_name: college-radio-6
     hostname: college-radio-6
@@ -55,3 +87,11 @@ services:
       - START_INDEX=60
       - END_INDEX=72
       - SPOTIFY_API=2
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://10.10.13.17:3100/loki/api/v1/push"
+        loki-batch-size: "500"
+        loki-timeout: "10s"
+        loki-retries: "2"
+        labels: "app=collage_radio"
