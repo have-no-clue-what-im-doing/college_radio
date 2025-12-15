@@ -75,7 +75,7 @@ def GetToken(client_id, client_secret, college_name):
             'client_id': f'{client_id}',
             'client_secret': f'{client_secret}'
         }
-        r = requests.post(url, data=data, headers=headers)
+        r = requests.post(url, data=data, headers=headers, timeout=15)
         response = r.json()
         return response['access_token']
     except Exception as e:
