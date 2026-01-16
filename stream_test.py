@@ -18,121 +18,12 @@ college_dict = {
 output_folder = '../temp_music'
 
 
-def GetToken(client_id, client_secret):
-    url = 'https://accounts.spotify.com/api/token'
-    headers = {
-        'Content-Type': 'application/x-www-form-urlencoded'
-    }
-    data = { 
-        'grant_type': 'client_credentials',
-        'client_id': f'{client_id}',
-        'client_secret': f'{client_secret}'
-    }
-    r = requests.post(url, data=data, headers=headers)
-    response = r.json()
-    return response['access_token']
-
-
-def GetSpotifyDetails(token, song_title):
-    url = f'https://api.spotify.com/v1/search?q={song_title}&type=track&limit=1'
-    headers = {
-       f'Authorization': f'Bearer {token}',
-    }
-    r = requests.get(url, headers=headers)
-    response = r.json()
-    popularity = response['tracks']['items'][0]['popularity']
-    duration = round((response['tracks']['items'][0]['duration_ms']) / 1000)
-    spotify_details = {
-        'popularity': popularity,
-        'duration': duration
-    }
-    return spotify_details
-   
 
 if not os.path.exists(output_folder):
     os.makedirs(output_folder)
 
 
-def CheckDuplicateSong(table, song):
-    
-    try:
-        conn = sqlite3.connect('college_radio.db', timeout=10)
-        c = conn.cursor()
-        c.execute(
-            f'''
-            CREATE TABLE IF NOT EXISTS {table} (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                epoch INTEGER,
-                entry_date TEXT,
-                college TEXT,
-                artist TEXT,
-                title TEXT,
-                album TEXT,
-                genre TEXT,
-                release_date INTEGER,
-                popularity INTEGER,
-                duration INTEGER,
-                album_art TEXT
-            )
-            '''
-        )
-        c.close()
-        conn.close()
-    except Exception as e:
-        print(f'error: {e}')
-    finally:
-        conn = sqlite3.connect('college_radio.db', timeout=10)
-        c = conn.cursor()
-        query_last_song = f'SELECT title FROM {table} ORDER BY id DESC LIMIT 1'
-        c.execute(query_last_song)
-        data = c.fetchall()
-        if data:
-            title = data[0][0]
-            if title != song['title']:
-                WriteToTable(song, table)
-                print('Table: ' + table + ' Title: ' + song['title'] + ' Artist: ' + song['artist'] + ' Year: ' + song['release_date'])
-        else:
-            WriteToTable(song, table)
-            print('Table: ' + table + ' Title: ' + song['title'] + ' Artist: ' + song['artist'] + ' Year: ' + song['release_date'])
 
-        conn.commit()
-        conn.close()
-        
-#this is ugly af but it works 🤪
-def WriteToTable(song_entry_dict, table_name):
-    conn = sqlite3.connect('college_radio.db', timeout=10)
-    cursor = conn.cursor()
-    try:
-        cursor.execute(
-            
-                f'''
-                INSERT INTO {table_name} (epoch, entry_date, college, artist, title, album, genre, release_date, popularity, duration, album_art) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                ''',
-                (
-                    song_entry_dict['epoch'], 
-                    song_entry_dict['entry_date'], 
-                    song_entry_dict['college'], 
-                    song_entry_dict['artist'],
-                    song_entry_dict['title'], 
-                    song_entry_dict['album'],
-                    song_entry_dict['genre'],
-                    song_entry_dict['release_date'],
-                    song_entry_dict['popularity'],
-                    song_entry_dict['duration'],
-                    song_entry_dict['album_art']
-                )
-            )
-        conn.commit()
-    except Exception as e:
-        print(f"Failed to write to table: {e}")
-    finally:
-        conn.close()
-
-
-
-def RemoveFile(audio_file):
-    os.remove(audio_file)
 
 
 
@@ -140,6 +31,8 @@ def IdentifySong(audio_file, college_name):
     try:
         song_response = subprocess.run(['songrec', 'audio-file-to-recognized-song', audio_file], capture_output=True, text=True)
         json_song_response = json.loads(song_response.stdout)
+        if json_song_response:
+            print(json_song_response)
         epoch = round(time.time())
         local_timezone = timezone(timedelta(hours=-4))
         entry_date = datetime.now(local_timezone).strftime('%Y-%m-%d %H:%M:%S')
@@ -150,36 +43,18 @@ def IdentifySong(audio_file, college_name):
         release_date = json_song_response['track']['sections'][0]['metadata'][2]['text']
         genre = json_song_response['track']['genres']['primary']
         get_song_search = json_song_response['track']['hub']['providers'][0]['actions'][0]['uri'].split(":", 2)[-1]
-        client_id = '0df099f908434dabb0fbc671bdca2e9b' #I rotate keys eventually and use a .env file eventually :)
-        client_secret = '74dce11de46c41689bb330ecb3b169b6' #DON'T GIVE AF RN!!!!
-        spotify_details = GetSpotifyDetails(GetToken(client_id, client_secret), get_song_search)
-        popularity = spotify_details['popularity']
-        duration = spotify_details['duration']
+        client_id = 'a075e6a082b44e3c9c915a76d2d0f718' #I rotate keys eventually and use a .env file eventually :)
+        client_secret = '25064ddad8a94c48843d9ccf1fb98ea7' #DON'T GIVE AF RN!!!!
         album_art = json_song_response['track']['images']['coverart']
-        song_entry_dict = {
-            'epoch': epoch,
-            'entry_date': entry_date,
-            'college': college,
-            'artist': artist,
-            'title': title, 
-            'album': album,
-            'release_date': release_date,
-            'genre': genre,
-            'popularity': popularity,
-            'duration': duration,
-            'album_art': album_art
-        }
-        CheckDuplicateSong(college_name, song_entry_dict)
     except Exception as e:
         print(f"Failed to identify song {e}")
-    finally:
-        RemoveFile(audio_file)
+
 
 
 def StreamTime(college_name, radio_stream):
     while True: 
         try:
-            r = requests.get(radio_stream, stream=True)
+            r = requests.get(radio_stream, stream=True, verify=False, timeout=15)
             audio_id = college_name + '_' + datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
             file_path = os.path.join(output_folder, f'{audio_id}.mp3')
             start_time = time.time()
@@ -200,7 +75,7 @@ def StreamTime(college_name, radio_stream):
             r.close()  
 
 
-StreamTime('dayton', 'https://ais-sa1.streamon.fm/7041_48k.aac/playlist.m3u8?listenerId=esTrackblock0556241&aw_0_1st.playerid=esPlayer&aw_0_1st.skey=1729292027')
+StreamTime('dayton', 'https://s.radiowave.io/ksdb.opus')
             
 '''
 def StreamAllColleges():
