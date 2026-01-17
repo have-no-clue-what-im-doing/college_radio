@@ -54,7 +54,7 @@ services:
     environment:
       - START_INDEX=36
       - END_INDEX=48
-      - SPOTIFY_API=2
+      - SPOTIFY_API=1
     logging:
       driver: loki
       options:
@@ -70,7 +70,7 @@ services:
     environment:
       - START_INDEX=48
       - END_INDEX=60
-      - SPOTIFY_API=2
+      - SPOTIFY_API=1
     logging:
       driver: loki
       options:
@@ -86,6 +86,54 @@ services:
     environment:
       - START_INDEX=60
       - END_INDEX=72
+      - SPOTIFY_API=1
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://10.10.13.17:3100/loki/api/v1/push"
+        loki-batch-size: "500"
+        loki-timeout: "10s"
+        loki-retries: "2"
+        labels: "app=collage_radio"
+  college_stream_7:
+    container_name: college-radio-7
+    hostname: college-radio-7
+    build: .
+    environment:
+      - START_INDEX=72
+      - END_INDEX=84
+      - SPOTIFY_API=1
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://10.10.13.17:3100/loki/api/v1/push"
+        loki-batch-size: "500"
+        loki-timeout: "10s"
+        loki-retries: "2"
+        labels: "app=collage_radio"
+  college_stream_8:
+    container_name: college-radio-8
+    hostname: college-radio-8
+    build: .
+    environment:
+      - START_INDEX=84
+      - END_INDEX=96
+      - SPOTIFY_API=1
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://10.10.13.17:3100/loki/api/v1/push"
+        loki-batch-size: "500"
+        loki-timeout: "10s"
+        loki-retries: "2"
+        labels: "app=collage_radio"
+  college_stream_9:
+    container_name: college-radio-9
+    hostname: college-radio-9
+    build: .
+    environment:
+      - START_INDEX=96
+      - END_INDEX=108
       - SPOTIFY_API=2
     logging:
       driver: loki
@@ -95,3 +143,228 @@ services:
         loki-timeout: "10s"
         loki-retries: "2"
         labels: "app=collage_radio"
+  college_stream_10:
+    container_name: college-radio-10
+    hostname: college-radio-10
+    build: .
+    environment:
+      - START_INDEX=108
+      - END_INDEX=120
+      - SPOTIFY_API=2
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://10.10.13.17:3100/loki/api/v1/push"
+        loki-batch-size: "500"
+        loki-timeout: "10s"
+        loki-retries: "2"
+        labels: "app=collage_radio"
+  college_stream_11:
+    container_name: college-radio-11
+    hostname: college-radio-11
+    build: .
+    environment:
+      - START_INDEX=120
+      - END_INDEX=132
+      - SPOTIFY_API=2
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://10.10.13.17:3100/loki/api/v1/push"
+        loki-batch-size: "500"
+        loki-timeout: "10s"
+        loki-retries: "2"
+        labels: "app=collage_radio"
+  college_stream_12:
+    container_name: college-radio-12
+    hostname: college-radio-12
+    build: .
+    environment:
+      - START_INDEX=132
+      - END_INDEX=144
+      - SPOTIFY_API=2
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://10.10.13.17:3100/loki/api/v1/push"
+        loki-batch-size: "500"
+        loki-timeout: "10s"
+        loki-retries: "2"
+        labels: "app=collage_radio"
+  college_stream_13:
+    container_name: college-radio-13
+    hostname: college-radio-13
+    build: .
+    environment:
+      - START_INDEX=144
+      - END_INDEX=156
+      - SPOTIFY_API=2
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://10.10.13.17:3100/loki/api/v1/push"
+        loki-batch-size: "500"
+        loki-timeout: "10s"
+        loki-retries: "2"
+        labels: "app=collage_radio"
+  college_stream_14:
+    container_name: college-radio-14
+    hostname: college-radio-14
+    build: .
+    environment:
+      - START_INDEX=156
+      - END_INDEX=168
+      - SPOTIFY_API=2
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://10.10.13.17:3100/loki/api/v1/push"
+        loki-batch-size: "500"
+        loki-timeout: "10s"
+        loki-retries: "2"
+        labels: "app=collage_radio"
+  college_stream_15:
+    container_name: college-radio-15
+    hostname: college-radio-15
+    build: .
+    environment:
+      - START_INDEX=168
+      - END_INDEX=180
+      - SPOTIFY_API=2
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://10.10.13.17:3100/loki/api/v1/push"
+        loki-batch-size: "500"
+        loki-timeout: "10s"
+        loki-retries: "2"
+        labels: "app=collage_radio"
+  college_stream_16:
+    container_name: college-radio-16
+    hostname: college-radio-16
+    build: .
+    environment:
+      - START_INDEX=180
+      - END_INDEX=192
+      - SPOTIFY_API=3
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://10.10.13.17:3100/loki/api/v1/push"
+        loki-batch-size: "500"
+        loki-timeout: "10s"
+        loki-retries: "2"
+        labels: "app=collage_radio"
+  college_stream_17:
+    container_name: college-radio-17
+    hostname: college-radio-17
+    build: .
+    environment:
+      - START_INDEX=192
+      - END_INDEX=204
+      - SPOTIFY_API=3
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://10.10.13.17:3100/loki/api/v1/push"
+        loki-batch-size: "500"
+        loki-timeout: "10s"
+        loki-retries: "2"
+        labels: "app=collage_radio"
+  college_stream_18:
+    container_name: college-radio-18
+    hostname: college-radio-18
+    build: .
+    environment:
+      - START_INDEX=204
+      - END_INDEX=216
+      - SPOTIFY_API=3
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://10.10.13.17:3100/loki/api/v1/push"
+        loki-batch-size: "500"
+        loki-timeout: "10s"
+        loki-retries: "2"
+        labels: "app=collage_radio"
+  college_stream_19:
+    container_name: college-radio-19
+    hostname: college-radio-19
+    build: .
+    environment:
+      - START_INDEX=216
+      - END_INDEX=228
+      - SPOTIFY_API=3
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://10.10.13.17:3100/loki/api/v1/push"
+        loki-batch-size: "500"
+        loki-timeout: "10s"
+        loki-retries: "2"
+        labels: "app=collage_radio"
+  college_stream_20:
+    container_name: college-radio-20
+    hostname: college-radio-20
+    build: .
+    environment:
+      - START_INDEX=228
+      - END_INDEX=240
+      - SPOTIFY_API=3
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://10.10.13.17:3100/loki/api/v1/push"
+        loki-batch-size: "500"
+        loki-timeout: "10s"
+        loki-retries: "2"
+        labels: "app=collage_radio"
+  college_stream_21:
+    container_name: college-radio-21
+    hostname: college-radio-21
+    build: .
+    environment:
+      - START_INDEX=240
+      - END_INDEX=252
+      - SPOTIFY_API=3
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://10.10.13.17:3100/loki/api/v1/push"
+        loki-batch-size: "500"
+        loki-timeout: "10s"
+        loki-retries: "2"
+        labels: "app=collage_radio"
+  college_stream_22:
+    container_name: college-radio-22
+    hostname: college-radio-22
+    build: .
+    environment:
+      - START_INDEX=252
+      - END_INDEX=264
+      - SPOTIFY_API=3
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://10.10.13.17:3100/loki/api/v1/push"
+        loki-batch-size: "500"
+        loki-timeout: "10s"
+        loki-retries: "2"
+        labels: "app=collage_radio"
+  college_stream_23:
+    container_name: college-radio-23
+    hostname: college-radio-23
+    build: .
+    environment:
+      - START_INDEX=264
+      - END_INDEX=272
+      - SPOTIFY_API=3
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://10.10.13.17:3100/loki/api/v1/push"
+        loki-batch-size: "500"
+        loki-timeout: "10s"
+        loki-retries: "2"
+        labels: "app=collage_radio"
+  
