@@ -1,5 +1,9 @@
+certifi==2025.11.12
+charset-normalizer==3.4.4
+ffmpeg-python==0.2.0
+future==1.0.0
+idna==3.11
 psycopg2==2.9.10
 PyYAML==6.0.2
-Requests==2.32.3
+requests==2.32.3
 urllib3==2.2.3
-python-ffmpeg==2.0.12
