@@ -74,7 +74,7 @@ def StreamTime(college_name, radio_stream):
             time.sleep(10)
 
 
-StreamTime('west_georgia', 'https://ais-sa1.streamon.fm/7041_48k.aac/playlist.m3u8?listenerId=esTrackblock0556241&aw_0_1st.playerid=esPlayer&aw_0_1st.skey=1729292027')
+StreamTime('west_georgia', 'https://ais-sa1.streamon.fm/7269_48k.aac/playlist.m3u8')
             
 '''
 def StreamAllColleges():

@@ -389,7 +389,7 @@ def StreamTime(college_name, radio_stream):
     while True: 
         try:
             audio_id = college_name + '_' + datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-            file_path = os.path.join(output_folder, f'{audio_id}.m4a')
+            file_path = os.path.join(output_folder, f'{audio_id}.mka')
             
             stream = ffmpeg.input(radio_stream, t=60)
             stream = ffmpeg.output(stream, file_path, acodec='copy', vn=None) 
