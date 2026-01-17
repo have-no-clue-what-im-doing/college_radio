@@ -11,6 +11,7 @@ import psycopg2
 from concurrent.futures import ThreadPoolExecutor
 import urllib3
 import yaml
+import ffmpeg
 
 #disable the dumbass warnings about no https
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -277,7 +278,7 @@ def IdentifySong(audio_file, college_name):
             WriteToStats(college_name, 'fail')
             logger.error(json.dumps({
                     'type': 'error',
-                    'error_code': 'SONGREC_FAIL',
+                    'error_code': 'SONGREC_FAIL_NO_RESPONSE',
                     'hostname': hostname,
                     'college': college_name,
                     'message': 'No response from songrec',
@@ -387,45 +388,21 @@ def IdentifySong(audio_file, college_name):
 def StreamTime(college_name, radio_stream):
     while True: 
         try:
-            r = requests.get(radio_stream, stream=True, verify=False, timeout=15)
-            if r.status_code != 200:
-                logger.error(json.dumps({
-                    'type': 'error',
-                    'error_code': 'NO_HTTP_200',
-                    'hostname': hostname,
-                    'college': college_name,
-                    'message': 'Did not receive a 200 response from radio stream',
-                }))
-                time.sleep(300)
-                continue
-            # if r.status_code == 200:
-            #     logger.info(f"{college_name} Response headers: {dict(r.headers)}")
             audio_id = college_name + '_' + datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
             file_path = os.path.join(output_folder, f'{audio_id}.mp3')
-            start_time = time.time()
             
-            with open(file_path, 'wb') as f:
-                for block in r.iter_content(1024):
-                    f.write(block)
-                    current_time = time.time()
-                    if (current_time - start_time) >= 60: 
-                        break
+            stream = ffmpeg.input(radio_stream, t=60)
+            stream = ffmpeg.output(stream, file_path, acodec='copy', vn=None) 
+            ffmpeg.run(stream, overwrite_output=True, quiet=True)
             
             IdentifySong(file_path, college_name)
         
+        except ffmpeg.Error as e:
+            print(f"Error: {e.stderr.decode() if e.stderr else e}")
+            time.sleep(10)
         except Exception as e:
-            logger.error(json.dumps({
-                    'type': 'error',
-                    'error_code': 'HTTP_REQUESTS_FAIL',
-                    'hostname': hostname,
-                    'college': college_name,
-                    'message': 'Failed to make general request to radio stream',
-                    'error': str(e)
-                }))
-            time.sleep(2)  
-        finally:
-            r.close()  
-
+            print(f"Error: {e}")
+            time.sleep(10)
 
 #StreamTime('ohio_state', college_dict['ohio_state'])
 

@@ -6,6 +6,7 @@ import json
 import sqlite3
 import time
 import os
+import ffmpeg
 from concurrent.futures import ThreadPoolExecutor
 
 college_dict = {
@@ -51,31 +52,29 @@ def IdentifySong(audio_file, college_name):
 
 
 
+import ffmpeg
+
 def StreamTime(college_name, radio_stream):
     while True: 
         try:
-            r = requests.get(radio_stream, stream=True, verify=False, timeout=15)
             audio_id = college_name + '_' + datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
             file_path = os.path.join(output_folder, f'{audio_id}.mp3')
-            start_time = time.time()
             
-            with open(file_path, 'wb') as f:
-                for block in r.iter_content(1024):
-                    f.write(block)
-                    current_time = time.time()
-                    if (current_time - start_time) >= 60: 
-                        break
+            stream = ffmpeg.input(radio_stream, t=60)
+            stream = ffmpeg.output(stream, file_path, acodec='copy', vn=None) 
+            ffmpeg.run(stream, overwrite_output=True, quiet=True)
             
             IdentifySong(file_path, college_name)
         
+        except ffmpeg.Error as e:
+            print(f"Error: {e.stderr.decode() if e.stderr else e}")
+            time.sleep(10)
         except Exception as e:
             print(f"Error: {e}")
-            time.sleep(10)  
-        finally:
-            r.close()  
+            time.sleep(10)
 
 
-StreamTime('dayton', 'https://s.radiowave.io/ksdb.opus')
+StreamTime('west_georgia', 'https://kbhu.bhsu.edu/index.html?sid=1')
             
 '''
 def StreamAllColleges():
