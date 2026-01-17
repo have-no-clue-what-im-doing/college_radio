@@ -429,13 +429,18 @@ end_index = int(os.getenv("END_INDEX", "5"))
 def StreamAllColleges():
     college_keys = list(college_dict.keys())
     end_index_actual = min(end_index, len(college_keys))
-    with ThreadPoolExecutor(max_workers=end_index_actual - start_index) as executor:
-        for i in range(start_index, end_index_actual):
-            college_name = college_keys[i]
-            print(college_name)
-            radio_stream = college_dict[college_name]
-            time.sleep(5)
-            executor.submit(StreamTime, college_name, radio_stream)
+    
+    executor = ThreadPoolExecutor(max_workers=end_index_actual - start_index)
+    
+    for i in range(start_index, end_index_actual):
+        college_name = college_keys[i]
+        print(college_name)
+        radio_stream = college_dict[college_name]
+        executor.submit(StreamTime, college_name, radio_stream)
+        time.sleep(5)
+    
+    while True:
+        time.sleep(3600)
 
 if __name__ == "__main__":
     StreamAllColleges()
