@@ -58,7 +58,7 @@ def StreamTime(college_name, radio_stream):
     while True: 
         try:
             audio_id = college_name + '_' + datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-            file_path = os.path.join(output_folder, f'{audio_id}.mp3')
+            file_path = os.path.join(output_folder, f'{audio_id}.m4a')
             
             stream = ffmpeg.input(radio_stream, t=60)
             stream = ffmpeg.output(stream, file_path, acodec='copy', vn=None) 
@@ -74,7 +74,7 @@ def StreamTime(college_name, radio_stream):
             time.sleep(10)
 
 
-StreamTime('west_georgia', 'https://kbhu.bhsu.edu/index.html?sid=1')
+StreamTime('west_georgia', 'https://ais-sa1.streamon.fm/7041_48k.aac/playlist.m3u8?listenerId=esTrackblock0556241&aw_0_1st.playerid=esPlayer&aw_0_1st.skey=1729292027')
             
 '''
 def StreamAllColleges():
