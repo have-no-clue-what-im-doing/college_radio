@@ -407,15 +407,15 @@ def StreamTime(college_name, radio_stream):
             
             stream = ffmpeg.input(radio_stream, t=60)
             stream = ffmpeg.output(stream, file_path, acodec='copy', vn=None) 
-            ffmpeg.run(stream, overwrite_output=True, quiet=True)
+            ffmpeg.run(stream, overwrite_output=True, quiet=True, capture_stderr=True)
             
             IdentifySong(file_path, college_name)
         
         except ffmpeg.Error as e:
-            print(f"Error: {e.stderr.decode() if e.stderr else e}")
+            #print(f"Error: {e.stderr.decode() if e.stderr else e}")
             time.sleep(10)
         except Exception as e:
-            print(f"Error: {e}")
+            #print(f"Error: {e}")
             time.sleep(10)
 
 #StreamTime('ohio_state', college_dict['ohio_state'])
