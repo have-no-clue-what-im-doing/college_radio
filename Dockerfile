@@ -4,7 +4,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 
 RUN apt-get update -y && \
-    apt-get install -y python3 python3-pip python3-venv software-properties-common libpq-dev && \
+    apt-get install -y python3 python3-pip python3-venv software-properties-common libpq-dev ffmpeg && \
     apt-add-repository ppa:marin-m/songrec -y && \
     apt-get update -y && \
     apt-get install -y songrec && \
