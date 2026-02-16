@@ -30,6 +30,8 @@ formatter = logging.Formatter('%(message)s')
 console_handler.setFormatter(formatter)
 logger.addHandler(console_handler)
 
+#save time to update codec every 24 hours
+codec_cache = {} 
 
 # read my yaml file:
 with open('./config.yaml', 'r') as file:
@@ -81,7 +83,7 @@ def GetToken(client_id, client_secret, college_name):
         return response['access_token']
     except Exception as e:
         logger.error(json.dumps({
-                    'type': 'error',
+                    'level': 'error',
                     'error_code': 'SPOTIFY_API_FAILED',
                     'hostname': hostname,
                     'college': college_name,
@@ -108,7 +110,7 @@ def GetSpotifyDetails(token, song_title, college_name):
         return spotify_details
     except Exception as e:
         logger.error(json.dumps({
-            'type': 'error',
+            'level': 'error',
             'error_code': 'SPOTIFY_API_FAILED',
             'hostname': hostname,
             'college': college_name,
@@ -119,7 +121,8 @@ def GetSpotifyDetails(token, song_title, college_name):
 
 if not os.path.exists(output_folder):
     os.makedirs(output_folder)
-
+# old remove file func. 
+'''
 def RemoveFile(college_name):
     try:
         temp_music_dir = os.listdir('../temp_music')
@@ -128,19 +131,40 @@ def RemoveFile(college_name):
         for song in temp_music_dir:
             get_underscore_song_file = len(song.split('_'))
             get_underscore_college_name = len(college_name.split('_')) + default_underscore
-            if college_name in  song and get_underscore_song_file == get_underscore_college_name:
+            if college_name in song and get_underscore_song_file == get_underscore_college_name:
                 final_file_path = os.path.join(working_path, song)
                 #print(f'removing: {final_file_path} for {college_name}')
                 os.remove(final_file_path)
     except Exception as e:
         logger.error(json.dumps({
-            'type': 'error',
+            'level': 'error',
             'error_code': 'REMOVE_OLD_FILE_FAILED',
             'hostname': hostname,
             'college': college_name,
             'message': 'Failed to search / remove file',
             'error': str(e)
         }))
+'''
+
+def RemoveFile(college_name):
+    try:
+        temp_music_dir = os.listdir('../temp_music')
+        working_path = os.path.join('..', 'temp_music')
+        for song in temp_music_dir:
+            if song.startswith(f"{college_name}_"): 
+                final_file_path = os.path.join(working_path, song)
+                os.remove(final_file_path)     
+    except Exception as e:
+        logger.error(json.dumps({
+            'level': 'error',
+            'error_code': 'REMOVE_OLD_FILE_FAILED',
+            'hostname': hostname,
+            'college': college_name,
+            'message': 'Failed to search / remove file',
+            'error': str(e)
+        }))
+            
+
 
 def CheckDuplicateSong(college_name, song):
     conn = None
@@ -156,7 +180,7 @@ def CheckDuplicateSong(college_name, song):
             if title != song['title']:
                 WriteToTable(song)
                 logger.info(json.dumps({
-                    'type': 'info',
+                    'level': 'info',
                     'hostname': hostname,
                     'college': college_name,
                     'title': song["title"],
@@ -166,7 +190,7 @@ def CheckDuplicateSong(college_name, song):
         else:
             WriteToTable(song)
             logger.info(json.dumps({
-                    'type': 'info',
+                    'level': 'info',
                     'hostname': hostname,
                     'college': college_name,
                     'title': song["title"],
@@ -209,7 +233,7 @@ def WriteToStats(college_name, request_type):
         conn.commit()
     except Exception as e:
         logger.error(json.dumps({
-            'type': 'error',
+            'level': 'error',
             'error_code': 'STATS_WRITE_FAILED',
             'hostname': hostname,
             'college': college_name,
@@ -252,7 +276,7 @@ def WriteToTable(song_entry_dict):
     except Exception as e:
         WriteToStats(song_entry_dict['college'], 'fail')
         logger.error(json.dumps({
-                    'type': 'error',
+                    'level': 'error',
                     'error_code': 'SONG_WRITE_FAIL',
                     'hostname': hostname,
                     'college': song_entry_dict['college'],
@@ -277,7 +301,7 @@ def IdentifySong(audio_file, college_name):
         if not song_response.stdout:
             WriteToStats(college_name, 'fail')
             logger.error(json.dumps({
-                    'type': 'error',
+                    'level': 'error',
                     'error_code': 'SONGREC_FAIL_NO_RESPONSE',
                     'hostname': hostname,
                     'college': college_name,
@@ -290,7 +314,7 @@ def IdentifySong(audio_file, college_name):
         except json.JSONDecodeError:
             WriteToStats(college_name, 'fail')
             logger.error(json.dumps({
-                    'type': 'error',
+                    'level': 'error',
                     'error_code': 'SONGREC_FAIL',
                     'hostname': hostname,
                     'college': college_name,
@@ -300,7 +324,7 @@ def IdentifySong(audio_file, college_name):
         if not json_song_response.get('matches'):
             WriteToStats(college_name, 'fail')
             logger.error(json.dumps({
-                    'type': 'error',
+                    'level': 'error',
                     'error_code': 'SONGREC_FAIL',
                     'hostname': hostname,
                     'college': college_name,
@@ -327,7 +351,7 @@ def IdentifySong(audio_file, college_name):
             if (not artist or not title or not album):
                 WriteToStats(college_name, 'fail')
                 logger.error(json.dumps({
-                    'type': 'error',
+                    'level': 'error',
                     'error_code': 'SONGREC_FAIL',
                     'hostname': hostname,
                     'college': college_name,
@@ -374,7 +398,7 @@ def IdentifySong(audio_file, college_name):
     except Exception as e:
         WriteToStats(college_name, 'fail')
         logger.error(json.dumps({
-                    'type': 'error',
+                    'level': 'error',
                     'error_code': 'SONGREC_FAIL',
                     'hostname': hostname,
                     'college': college_name,
@@ -385,46 +409,76 @@ def IdentifySong(audio_file, college_name):
         RemoveFile(college_name)
 
 
+def AudioMapping(codec):
+    if codec == 'mp3':
+        return ('mp3', 'copy')
+    elif codec == 'aac':
+        return ('m4a', 'aac')  # Re-encode instead of copy
+    elif codec == 'opus':
+        return ('opus', 'copy')
+    elif codec == 'vorbis':
+        return ('ogg', 'copy')
+    else:
+        return ('mp3', 'libmp3lame')
+
+
 def StreamTime(college_name, radio_stream):
+    global codec_cache
+    
     while True: 
         try:
-            r = requests.get(radio_stream, stream=True, verify=False, timeout=15)
-            if r.status_code != 200:
-                logger.error(json.dumps({
-                    'type': 'error',
-                    'error_code': 'NO_HTTP_200',
-                    'hostname': hostname,
-                    'college': college_name,
-                    'message': 'Did not receive a 200 response from radio stream',
-                }))
-                r.close()
-                time.sleep(300)
-                continue
-            r.close()
-
+            current_time = round(time.time())
+            
+            if (college_name not in codec_cache or 
+                current_time - codec_cache[college_name]['cached_at'] >= 86400):
+                
+                probe = ffmpeg.probe(radio_stream)
+                codec_cache[college_name] = {
+                    'codec': probe['streams'][0]['codec_name'],
+                    'cached_at': current_time
+                }
+            
+            codec = codec_cache[college_name]['codec']
+            ext, audio_codec = AudioMapping(codec)  # Get both extension and codec
+            
             audio_id = college_name + '_' + datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-            file_path = os.path.join(output_folder, f'{audio_id}.mka')
+            file_path = os.path.join(output_folder, f'{audio_id}.{ext}')
             
             stream = ffmpeg.input(radio_stream, t=60)
-            stream = ffmpeg.output(stream, file_path, acodec='copy', vn=None) 
+            stream = ffmpeg.output(stream, file_path, acodec=audio_codec, vn=None)  # Use variable codec
             ffmpeg.run(stream, overwrite_output=True, quiet=True, capture_stderr=True)
             
             IdentifySong(file_path, college_name)
+            RemoveFile(college_name)
         
         except ffmpeg.Error as e:
-            #print(f"Error: {e.stderr.decode() if e.stderr else e}")
+            logger.error(json.dumps({
+                'level': 'error',
+                'error_code': 'FFMPEG_ERROR',
+                'hostname': hostname,
+                'college': college_name,
+                'message': e.stderr.decode() if e.stderr else str(e)
+            }))
             time.sleep(10)
         except Exception as e:
-            #print(f"Error: {e}")
+            logger.error(json.dumps({
+                'level': 'error',
+                'error_code': 'GENERAL_ERROR',
+                'hostname': hostname,
+                'college': college_name,
+                'message': str(e)
+            }))
             time.sleep(10)
-
-#StreamTime('ohio_state', college_dict['ohio_state'])
-
 
 spotify_api = int(os.getenv("SPOTIFY_API", "1"))
 
-start_index = int(os.getenv("START_INDEX", "0"))
-end_index = int(os.getenv("END_INDEX", "5"))
+start_index = int(os.getenv("START_INDEX", "92"))
+end_index = int(os.getenv("END_INDEX", "98"))
+
+
+# StreamTime('cincinnati', college_dict['cincinnati'])
+
+
 
 def StreamAllColleges():
     college_keys = list(college_dict.keys())

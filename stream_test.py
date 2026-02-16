@@ -33,7 +33,7 @@ def IdentifySong(audio_file, college_name):
         song_response = subprocess.run(['songrec', 'audio-file-to-recognized-song', audio_file], capture_output=True, text=True)
         json_song_response = json.loads(song_response.stdout)
         if json_song_response:
-            print(json_song_response)
+            print(json.dumps(json_song_response, indent=2))
         epoch = round(time.time())
         local_timezone = timezone(timedelta(hours=-4))
         entry_date = datetime.now(local_timezone).strftime('%Y-%m-%d %H:%M:%S')
@@ -58,7 +58,7 @@ def StreamTime(college_name, radio_stream):
     while True: 
         try:
             audio_id = college_name + '_' + datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-            file_path = os.path.join(output_folder, f'{audio_id}.m4a')
+            file_path = os.path.join(output_folder, f'{audio_id}.mp3')
             
             stream = ffmpeg.input(radio_stream, t=60)
             stream = ffmpeg.output(stream, file_path, acodec='copy', vn=None) 
@@ -74,7 +74,7 @@ def StreamTime(college_name, radio_stream):
             time.sleep(10)
 
 
-StreamTime('west_georgia', 'https://ais-sa1.streamon.fm/7269_48k.aac/playlist.m3u8')
+StreamTime('cincinnati', 'https://s2.radio.co/s20123bfa0/listen')
             
 '''
 def StreamAllColleges():
