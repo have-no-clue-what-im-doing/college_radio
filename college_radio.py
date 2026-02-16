@@ -474,7 +474,7 @@ def StreamTime(college_name, radio_stream):
                 'college': college_name,
                 'message': e.stderr.decode() if e.stderr else str(e)
             }))
-            time.sleep(10)
+            time.sleep(300)
         except Exception as e:
             logger.error(json.dumps({
                 'level': 'error',
@@ -483,7 +483,7 @@ def StreamTime(college_name, radio_stream):
                 'college': college_name,
                 'message': str(e)
             }))
-            time.sleep(10)
+            time.sleep(100)
 
 spotify_api = int(os.getenv("SPOTIFY_API", "1"))
 

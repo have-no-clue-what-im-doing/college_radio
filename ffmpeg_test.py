@@ -15,8 +15,9 @@ def StreamTest(stream):
     if probe:
         codec = probe['streams'][0]["codec_name"]
         # print(json.dumps(probe))
+        print(probe)
         print(codec)
 
 
 
-StreamTest("https://s2.radio.co/s20123bfa0/listen")
+StreamTest("https://broadcast.shoutcheap.com/stream/wsinradi/stream.pls")
