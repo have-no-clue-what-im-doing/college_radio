@@ -191,7 +191,7 @@ def GetDeezerDetails(deezer_isrc, college_name):
         if r.status_code != 200:
             r.close()
             logger.error(json.dumps({
-                'type': 'error',
+                'level': 'error',
                 'error_code': 'NO_HTTP_200',
                 'hostname': hostname,
                 'college': college_name,
@@ -222,7 +222,7 @@ def GetDeezerDetails(deezer_isrc, college_name):
             return deezer_details
         else:
             logger.error(json.dumps({
-                'type': 'error',
+                'level': 'error',
                 'error_code': 'DEEZER_JSON_ERROR',
                 'hostname': hostname,
                 'college': college_name,
@@ -231,7 +231,7 @@ def GetDeezerDetails(deezer_isrc, college_name):
     except Exception as e:
         r.close()
         logger.error(json.dumps({
-            'type': 'error',
+            'level': 'error',
             'error_code': 'DEEZER_API_REQUEST_FAIL',
             'hostname': hostname,
             'college': college_name,
@@ -326,6 +326,15 @@ def IdentifySong(audio_file, college_name):
                     explicit = deezer_details.get('explicit', None)
                     isrc = deezer_details.get('isrc', None)
                     deezer_id = deezer_details.get('deezer_id', None)
+                    if None in (duration, rank, bpm, gain, explicit, isrc, deezer_id):
+                        logger.error(json.dumps({
+                        'level': 'error',
+                        'error_code': 'DEEZER_API_NULL_VALUE',
+                        'hostname': hostname,
+                        'college': college_name,
+                        'message': 'Deezer API returned a null value'
+                        }))
+
                 else:
                     duration = None
                     rank = None
@@ -411,7 +420,7 @@ def StreamTime(college_name, radio_stream):
             r = requests.get(radio_stream, stream=True, verify=False, timeout=15)
             if r.status_code != 200:
                 logger.error(json.dumps({
-                    'type': 'error',
+                    'level': 'error',
                     'error_code': 'NO_HTTP_200',
                     'hostname': hostname,
                     'college': college_name,
