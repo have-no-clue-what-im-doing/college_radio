@@ -42,7 +42,7 @@ with open('./config.yaml', 'r') as file:
 
 college_dict = yaml_config['college_dict']
 database_dict = yaml_config['database']
-spotify_dict = yaml_config['spotify']
+
 proxy_string = yaml_config['proxy']
 
 
@@ -67,84 +67,10 @@ def ConnectToDB():
         port = database_dict['port'] 
     )
 
-def GetToken(client_id, client_secret, college_name):
-    try:
-        url = 'https://accounts.spotify.com/api/token'
-        headers = {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        }
-        data = { 
-            'grant_type': 'client_credentials',
-            'client_id': f'{client_id}',
-            'client_secret': f'{client_secret}'
-        }
-        r = requests.post(url, data=data, headers=headers, timeout=15)
-        response = r.json()
-        return response['access_token']
-    except Exception as e:
-        logger.error(json.dumps({
-                    'level': 'error',
-                    'error_code': 'SPOTIFY_API_FAILED',
-                    'hostname': hostname,
-                    'college': college_name,
-                    'message': 'Unable to retrieve Spotify API token',
-                    'error': str(e)
-                }))
-
-
-def GetSpotifyDetails(token, song_title, college_name):
-    try:
-        url = f'https://api.spotify.com/v1/search?q={song_title}&type=track&limit=1'
-        headers = {
-        f'Authorization': f'Bearer {token}',
-        }
-        r = requests.get(url, headers=headers, timeout=5)
-        response = r.json()
-        #print('response ', response)
-        popularity = response['tracks']['items'][0]['popularity']
-        duration = round((response['tracks']['items'][0]['duration_ms']) / 1000)
-        spotify_details = {
-            'popularity': popularity,
-            'duration': duration
-        }
-        return spotify_details
-    except Exception as e:
-        logger.error(json.dumps({
-            'level': 'error',
-            'error_code': 'SPOTIFY_API_FAILED',
-            'hostname': hostname,
-            'college': college_name,
-            'message': 'Request to Spotify API failed',
-            'error': str(e)
-        }))
-   
 
 if not os.path.exists(output_folder):
     os.makedirs(output_folder)
-# old remove file func. 
-'''
-def RemoveFile(college_name):
-    try:
-        temp_music_dir = os.listdir('../temp_music')
-        default_underscore = 2
-        working_path = os.path.join('..', 'temp_music')
-        for song in temp_music_dir:
-            get_underscore_song_file = len(song.split('_'))
-            get_underscore_college_name = len(college_name.split('_')) + default_underscore
-            if college_name in song and get_underscore_song_file == get_underscore_college_name:
-                final_file_path = os.path.join(working_path, song)
-                #print(f'removing: {final_file_path} for {college_name}')
-                os.remove(final_file_path)
-    except Exception as e:
-        logger.error(json.dumps({
-            'level': 'error',
-            'error_code': 'REMOVE_OLD_FILE_FAILED',
-            'hostname': hostname,
-            'college': college_name,
-            'message': 'Failed to search / remove file',
-            'error': str(e)
-        }))
-'''
+
 
 def RemoveFile(college_name):
     try:
@@ -200,52 +126,18 @@ def CheckDuplicateSong(college_name, song):
         
         conn.commit()  
     except Exception as e:
-        logger.error(f'{hostname}  {e}')
+        logger.error(json.dumps({
+            'level': 'error',
+            'error_code': 'DUPLICATE_CHECK_FAIL',
+            'hostname': hostname,
+            'college': college_name,
+            'message': 'Failed to check for duplicate song in table / write to table',
+            'error': str(e)
+        }))
     finally:
         if conn:
             conn.close() 
         
-# 'type="error" hostname="{hostname}" college="{college_name}" text="Unable to write success stat to table" error="{e}"')
-def WriteToStats(college_name, request_type):
-    conn = ConnectToDB()
-    cursor = conn.cursor()
-    try:
-        if request_type == "success":
-            cursor.execute(
-                '''
-                INSERT INTO stats (college, requests, failed) 
-                VALUES (%s, 1, 0)
-                ON CONFLICT (college) 
-                DO UPDATE SET requests = stats.requests + 1
-                ''',
-                (college_name,)
-            )
-        elif request_type == "fail":
-            cursor.execute(
-                '''
-                INSERT INTO stats (college, requests, failed) 
-                VALUES (%s, 1, 1)
-                ON CONFLICT (college) 
-                DO UPDATE SET requests = stats.requests + 1, failed = stats.failed + 1
-                ''',
-                (college_name,)
-            )
-        conn.commit()
-    except Exception as e:
-        logger.error(json.dumps({
-            'level': 'error',
-            'error_code': 'STATS_WRITE_FAILED',
-            'hostname': hostname,
-            'college': college_name,
-            'request_type': request_type,
-            'message': 'Unable to write stat to table',
-            'error': str(e)
-        }))
-    finally:
-        cursor.close()
-        conn.close()
-
-
         
 #this is ugly af but it works 🤪
 def WriteToTable(song_entry_dict):
@@ -255,8 +147,8 @@ def WriteToTable(song_entry_dict):
         cursor.execute(
             
                 f'''
-                INSERT INTO all_colleges (epoch, entry_date, college, artist, title, album, genre, release_date, popularity, duration) 
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                INSERT INTO all_colleges (epoch, entry_date, college, artist, title, album, genre, release_date, rank, duration, bpm, gain, explicit, isrc, deezer_id) 
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 ''',
                 (
                     song_entry_dict['epoch'], 
@@ -267,14 +159,17 @@ def WriteToTable(song_entry_dict):
                     song_entry_dict['album'],
                     song_entry_dict['genre'],
                     song_entry_dict['release_date'],
-                    song_entry_dict['popularity'],
-                    song_entry_dict['duration']
+                    song_entry_dict['rank'],
+                    song_entry_dict['duration'],
+                    song_entry_dict['bpm'],
+                    song_entry_dict['gain'],
+                    song_entry_dict['explicit'],
+                    song_entry_dict['isrc'],
+                    song_entry_dict['deezer_id']
                 )
             )
         conn.commit()
-        WriteToStats(song_entry_dict['college'], 'success')
     except Exception as e:
-        WriteToStats(song_entry_dict['college'], 'fail')
         logger.error(json.dumps({
                     'level': 'error',
                     'error_code': 'SONG_WRITE_FAIL',
@@ -289,8 +184,63 @@ def WriteToTable(song_entry_dict):
         
 
 
+def GetDeezerDetails(deezer_isrc, college_name):
+    # print(f"Deezer isrc: {deezer_isrc} college: {college_name}")
+    try:
+        r = requests.get(f'https://api.deezer.com/track/isrc:{deezer_isrc}', proxies=proxies, stream=True, verify=False, timeout=15)
+        if r.status_code != 200:
+            r.close()
+            logger.error(json.dumps({
+                'type': 'error',
+                'error_code': 'NO_HTTP_200',
+                'hostname': hostname,
+                'college': college_name,
+                'message': 'Did not receive a 200 response from Deezer api request'
+            }))
+            return 
+        json_song_response = json.loads(r.text)
+        r.close()
+        # print(f"deezer json response: {json_song_response}")
+        if json_song_response:
+            duration = json_song_response.get('duration', None)
+            deezer_id = json_song_response.get('id', None)
+            isrc = json_song_response.get('isrc', None)
+            rank = json_song_response.get('rank', None)
+            explicit = json_song_response.get('explicit_lyrics', None)
+            bpm = json_song_response.get('bpm', None)
+            gain = json_song_response.get('gain', None)
 
+            deezer_details = {
+                'duration': duration,
+                'rank': rank,
+                'bpm': bpm,
+                'gain': gain,
+                'explicit': explicit,
+                'isrc': isrc,
+                'deezer_id': deezer_id
+            }
+            return deezer_details
+        else:
+            logger.error(json.dumps({
+                'type': 'error',
+                'error_code': 'DEEZER_JSON_ERROR',
+                'hostname': hostname,
+                'college': college_name,
+                'message': f'Deezer API did not return track details / unable to parse to json'
+            }))
+    except Exception as e:
+        r.close()
+        logger.error(json.dumps({
+            'type': 'error',
+            'error_code': 'DEEZER_API_REQUEST_FAIL',
+            'hostname': hostname,
+            'college': college_name,
+            'message': 'Request.get call to Deezer API failed',
+            'error': str(e)
+        }))
+    return
 
+      
 
 def IdentifySong(audio_file, college_name):
     try:
@@ -299,36 +249,33 @@ def IdentifySong(audio_file, college_name):
             env['HTTPS_PROXY'] = f'http://{proxy_string}'
         song_response = subprocess.run(['songrec', 'audio-file-to-recognized-song', audio_file], capture_output=True, text=True, env=env)
         if not song_response.stdout:
-            WriteToStats(college_name, 'fail')
             logger.error(json.dumps({
                     'level': 'error',
                     'error_code': 'SONGREC_FAIL_NO_RESPONSE',
                     'hostname': hostname,
                     'college': college_name,
-                    'message': 'No response from songrec',
+                    'message': 'No response from songrec'
                 }))
             time.sleep(15)
             return
         try:
             json_song_response = json.loads(song_response.stdout)
         except json.JSONDecodeError:
-            WriteToStats(college_name, 'fail')
             logger.error(json.dumps({
                     'level': 'error',
                     'error_code': 'SONGREC_FAIL',
                     'hostname': hostname,
                     'college': college_name,
-                    'message': 'Unable to parse json from songrec reply',
+                    'message': 'Unable to parse json from songrec reply'
                 }))
             return
         if not json_song_response.get('matches'):
-            WriteToStats(college_name, 'fail')
             logger.error(json.dumps({
-                    'level': 'error',
-                    'error_code': 'SONGREC_FAIL',
+                    'level': 'info',
+                    'error_code': 'SONGREC_NO_SONG',
                     'hostname': hostname,
                     'college': college_name,
-                    'message': 'Songrec failed to identify the song',
+                    'message': 'Songrec failed to identify the song'
                 }))
         else:
             epoch = round(time.time())
@@ -349,37 +296,67 @@ def IdentifySong(audio_file, college_name):
             #album_art = json_song_response.get('track', {}).get('images', {}).get('coverart', None)
             
             if (not artist or not title or not album):
-                WriteToStats(college_name, 'fail')
                 logger.error(json.dumps({
                     'level': 'error',
                     'error_code': 'SONGREC_FAIL',
                     'hostname': hostname,
                     'college': college_name,
-                    'message': 'Songrec reply did not give title / artist / album',
+                    'message': 'Songrec reply did not give title / artist / album'
                 }))
                 return
             try:
-                get_song_search = json_song_response.get('track', {}).get('hub', {}).get('providers', [{}])[0].get('actions', [{}])[0].get('uri', None)
-                #print('song serach: ' + get_song_search)
-                if get_song_search:
-                    get_song_search = get_song_search.split(":", 2)[-1]
-            except (IndexError, KeyError):
-                #print('song search error')
-                get_song_search = None
-            client_id = spotify_dict[f'client_id_{spotify_api}'] 
-            client_secret = spotify_dict[f'client_secret_{spotify_api}']  #fixed :)
-
-            if get_song_search:
-                spotify_details = GetSpotifyDetails(GetToken(client_id, client_secret, college_name), get_song_search, college_name)
-                if spotify_details:
-                    popularity = spotify_details.get('popularity', None)
-                    duration = spotify_details.get('duration', None)
+                #PUT DEEZER API CALL HERE INSTEAD
+                songrec_isrc = json_song_response.get('track', {}).get('isrc', None) 
+            except Exception as e:
+                logger.error(json.dumps({
+                    'level': 'error',
+                    'error_code': 'ISRC_FAIL',
+                    'hostname': hostname,
+                    'college': college_name,
+                    'message': 'Failed to get isrc from songrec',
+                    'error': str(e)
+                }))
+            if songrec_isrc:
+                deezer_details = GetDeezerDetails(songrec_isrc, college_name)
+                if deezer_details:
+                    duration = deezer_details.get('duration', None)
+                    rank = deezer_details.get('rank', None)
+                    bpm = deezer_details.get('bpm', None)
+                    gain = deezer_details.get('gain', None)
+                    explicit = deezer_details.get('explicit', None)
+                    isrc = deezer_details.get('isrc', None)
+                    deezer_id = deezer_details.get('deezer_id', None)
                 else:
-                    popularity = None
                     duration = None
+                    rank = None
+                    bpm = None
+                    gain = None
+                    explicit = None
+                    isrc = None
+                    deezer_id = None
+                    logger.error(json.dumps({
+                    'level': 'error',
+                    'error_code': 'DEEZER_API_FAIL',
+                    'hostname': hostname,
+                    'college': college_name,
+                    'message': 'Failed to retrieve Deezer details'
+                    }))
             else:
-                popularity = None
                 duration = None
+                rank = None
+                bpm = None
+                gain = None
+                explicit = None
+                isrc = None
+                deezer_id = None
+                logger.error(json.dumps({
+                    'level': 'error',
+                    'error_code': 'ISRC_FAIL',
+                    'hostname': hostname,
+                    'college': college_name,
+                    'message': 'Failed to retrieve Deezer isrc'
+                    }))
+                
             
             song_entry_dict = {
                 'epoch': epoch,
@@ -390,13 +367,17 @@ def IdentifySong(audio_file, college_name):
                 'album': album,
                 'release_date': release_date,
                 'genre': genre,
-                'popularity': popularity,
-                'duration': duration
+                'duration': duration,
+                'rank': rank,
+                'bpm': bpm,
+                'gain': gain,
+                'explicit': explicit,
+                'isrc': isrc,
+                'deezer_id': deezer_id
             }
             #print(song_entry_dict)
             CheckDuplicateSong(college_name, song_entry_dict)
     except Exception as e:
-        WriteToStats(college_name, 'fail')
         logger.error(json.dumps({
                     'level': 'error',
                     'error_code': 'SONGREC_FAIL',
@@ -485,13 +466,12 @@ def StreamTime(college_name, radio_stream):
             }))
             time.sleep(100)
 
-spotify_api = int(os.getenv("SPOTIFY_API", "1"))
 
 start_index = int(os.getenv("START_INDEX", "92"))
 end_index = int(os.getenv("END_INDEX", "98"))
 
 
-# StreamTime('cincinnati', college_dict['cincinnati'])
+# StreamTime('texas_am', college_dict['texas_am'])
 
 
 
