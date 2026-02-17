@@ -107,21 +107,25 @@ def CheckDuplicateSong(college_name, song):
                 WriteToTable(song)
                 logger.info(json.dumps({
                     'level': 'info',
+                    'error_code': 'TABLE_WRITE',
                     'hostname': hostname,
                     'college': college_name,
                     'title': song["title"],
                     'artist': song["artist"],
                     'year': song["release_date"]
+                    'message': 'Successful table write'
                     }))
         else:
             WriteToTable(song)
             logger.info(json.dumps({
                     'level': 'info',
+                    'error_code': 'TABLE_WRITE',
                     'hostname': hostname,
                     'college': college_name,
                     'title': song["title"],
                     'artist': song["artist"],
                     'year': song["release_date"]
+                    'message': 'Successful table write'
                     }))
         
         conn.commit()  
