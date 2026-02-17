@@ -112,7 +112,7 @@ def CheckDuplicateSong(college_name, song):
                     'college': college_name,
                     'title': song["title"],
                     'artist': song["artist"],
-                    'year': song["release_date"]
+                    'year': song["release_date"],
                     'message': 'Successful table write'
                     }))
         else:
@@ -124,7 +124,7 @@ def CheckDuplicateSong(college_name, song):
                     'college': college_name,
                     'title': song["title"],
                     'artist': song["artist"],
-                    'year': song["release_date"]
+                    'year': song["release_date"],
                     'message': 'Successful table write'
                     }))
         
