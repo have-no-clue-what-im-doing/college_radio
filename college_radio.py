@@ -92,7 +92,7 @@ def RemoveFile(college_name):
             
 
 
-def CheckDuplicateSong(college_name, song):
+def CheckDuplicateSong(college_name, title):
     conn = None
     try:
         conn = ConnectToDB()
@@ -102,33 +102,14 @@ def CheckDuplicateSong(college_name, song):
         c.execute(query_last_song)
         data = c.fetchall()
         if data:
-            title = data[0][0]
-            if title != song['title']:
-                WriteToTable(song)
-                logger.info(json.dumps({
-                    'level': 'info',
-                    'error_code': 'TABLE_WRITE',
-                    'hostname': hostname,
-                    'college': college_name,
-                    'title': song["title"],
-                    'artist': song["artist"],
-                    'year': song["release_date"],
-                    'message': 'Successful table write'
-                    }))
+            last_title = data[0][0]
+            if last_title != title:
+                return True
+                
+            else:
+                return False
         else:
-            WriteToTable(song)
-            logger.info(json.dumps({
-                    'level': 'info',
-                    'error_code': 'TABLE_WRITE',
-                    'hostname': hostname,
-                    'college': college_name,
-                    'title': song["title"],
-                    'artist': song["artist"],
-                    'year': song["release_date"],
-                    'message': 'Successful table write'
-                    }))
-        
-        conn.commit()  
+            return True
     except Exception as e:
         logger.error(json.dumps({
             'level': 'error',
@@ -138,6 +119,7 @@ def CheckDuplicateSong(college_name, song):
             'message': 'Failed to check for duplicate song in table / write to table',
             'error': str(e)
         }))
+        return False
     finally:
         if conn:
             conn.close() 
@@ -173,6 +155,16 @@ def WriteToTable(song_entry_dict):
                 )
             )
         conn.commit()
+        logger.info(json.dumps({
+                    'level': 'info',
+                    'error_code': 'TABLE_WRITE',
+                    'hostname': hostname,
+                    'college': song_entry_dict['college'], 
+                    'title': song_entry_dict['title'], 
+                    'artist': song_entry_dict['artist'],
+                    'year': song_entry_dict['release_date'],
+                    'message': 'Successful table write'
+                    }))
     except Exception as e:
         logger.error(json.dumps({
                     'level': 'error',
@@ -233,7 +225,6 @@ def GetDeezerDetails(deezer_isrc, college_name):
                 'message': f'Deezer API did not return track details / unable to parse to json'
             }))
     except Exception as e:
-        r.close()
         logger.error(json.dumps({
             'level': 'error',
             'error_code': 'DEEZER_API_REQUEST_FAIL',
@@ -242,6 +233,7 @@ def GetDeezerDetails(deezer_isrc, college_name):
             'message': 'Request.get call to Deezer API failed',
             'error': str(e)
         }))
+        # return None
     return
 
       
@@ -274,7 +266,7 @@ def IdentifySong(audio_file, college_name):
                 }))
             return
         if not json_song_response.get('matches'):
-            logger.error(json.dumps({
+            logger.info(json.dumps({
                     'level': 'info',
                     'error_code': 'SONGREC_NO_SONG',
                     'hostname': hostname,
@@ -308,37 +300,43 @@ def IdentifySong(audio_file, college_name):
                     'message': 'Songrec reply did not give title / artist / album'
                 }))
                 return
-            try:
-                #PUT DEEZER API CALL HERE INSTEAD
+            if CheckDuplicateSong(college_name, title):
                 songrec_isrc = json_song_response.get('track', {}).get('isrc', None) 
-            except Exception as e:
-                logger.error(json.dumps({
-                    'level': 'error',
-                    'error_code': 'ISRC_FAIL',
-                    'hostname': hostname,
-                    'college': college_name,
-                    'message': 'Failed to get isrc from songrec',
-                    'error': str(e)
-                }))
-            if songrec_isrc:
-                deezer_details = GetDeezerDetails(songrec_isrc, college_name)
-                if deezer_details:
-                    duration = deezer_details.get('duration', None)
-                    rank = deezer_details.get('rank', None)
-                    bpm = deezer_details.get('bpm', None)
-                    gain = deezer_details.get('gain', None)
-                    explicit = deezer_details.get('explicit', None)
-                    isrc = deezer_details.get('isrc', None)
-                    deezer_id = deezer_details.get('deezer_id', None)
-                    if None in (duration, rank, bpm, gain, explicit, isrc, deezer_id):
+                
+                if songrec_isrc:
+                    deezer_details = GetDeezerDetails(songrec_isrc, college_name)
+                    if deezer_details:
+                        duration = deezer_details.get('duration', None)
+                        rank = deezer_details.get('rank', None)
+                        bpm = deezer_details.get('bpm', None)
+                        gain = deezer_details.get('gain', None)
+                        explicit = deezer_details.get('explicit', None)
+                        isrc = deezer_details.get('isrc', None)
+                        deezer_id = deezer_details.get('deezer_id', None)
+                        if all(v is None for v in (duration, rank, bpm, gain, explicit, isrc, deezer_id)):
+                            logger.error(json.dumps({
+                            'level': 'warning',
+                            'error_code': 'DEEZER_API_NULL_VALUE',
+                            'hostname': hostname,
+                            'college': college_name,
+                            'message': 'Deezer API returned a null value'
+                            }))
+
+                    else:
+                        duration = None
+                        rank = None
+                        bpm = None
+                        gain = None
+                        explicit = None
+                        isrc = None
+                        deezer_id = None
                         logger.error(json.dumps({
                         'level': 'error',
-                        'error_code': 'DEEZER_API_NULL_VALUE',
+                        'error_code': 'DEEZER_API_FAIL',
                         'hostname': hostname,
                         'college': college_name,
-                        'message': 'Deezer API returned a null value'
+                        'message': 'Failed to retrieve Deezer details'
                         }))
-
                 else:
                     duration = None
                     rank = None
@@ -348,48 +346,34 @@ def IdentifySong(audio_file, college_name):
                     isrc = None
                     deezer_id = None
                     logger.error(json.dumps({
-                    'level': 'error',
-                    'error_code': 'DEEZER_API_FAIL',
-                    'hostname': hostname,
-                    'college': college_name,
-                    'message': 'Failed to retrieve Deezer details'
-                    }))
-            else:
-                duration = None
-                rank = None
-                bpm = None
-                gain = None
-                explicit = None
-                isrc = None
-                deezer_id = None
-                logger.error(json.dumps({
-                    'level': 'error',
-                    'error_code': 'ISRC_FAIL',
-                    'hostname': hostname,
-                    'college': college_name,
-                    'message': 'Failed to retrieve Deezer isrc'
-                    }))
+                        'level': 'error',
+                        'error_code': 'ISRC_FAIL',
+                        'hostname': hostname,
+                        'college': college_name,
+                        'message': 'Failed to retrieve Deezer isrc'
+                        }))
+                    
                 
-            
-            song_entry_dict = {
-                'epoch': epoch,
-                'entry_date': entry_date,
-                'college': college,
-                'artist': artist,
-                'title': title, 
-                'album': album,
-                'release_date': release_date,
-                'genre': genre,
-                'duration': duration,
-                'rank': rank,
-                'bpm': bpm,
-                'gain': gain,
-                'explicit': explicit,
-                'isrc': isrc,
-                'deezer_id': deezer_id
-            }
+                song_entry_dict = {
+                    'epoch': epoch,
+                    'entry_date': entry_date,
+                    'college': college,
+                    'artist': artist,
+                    'title': title, 
+                    'album': album,
+                    'release_date': release_date,
+                    'genre': genre,
+                    'duration': duration,
+                    'rank': rank,
+                    'bpm': bpm,
+                    'gain': gain,
+                    'explicit': explicit,
+                    'isrc': isrc,
+                    'deezer_id': deezer_id
+                }
+                WriteToTable(song_entry_dict)
             #print(song_entry_dict)
-            CheckDuplicateSong(college_name, song_entry_dict)
+            
     except Exception as e:
         logger.error(json.dumps({
                     'level': 'error',
@@ -458,7 +442,6 @@ def StreamTime(college_name, radio_stream):
             ffmpeg.run(stream, overwrite_output=True, quiet=True, capture_stderr=True)
             
             IdentifySong(file_path, college_name)
-            RemoveFile(college_name)
         
         except ffmpeg.Error as e:
             logger.error(json.dumps({
