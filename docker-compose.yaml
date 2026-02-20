@@ -4,9 +4,7 @@ services:
     hostname: college-radio-1
     build: .
     environment:
-      - START_INDEX=0
-      - END_INDEX=12
-      - SPOTIFY_API=1
+      GROUP: 1
     logging:
       driver: loki
       options:
@@ -20,9 +18,7 @@ services:
     hostname: college-radio-2
     build: .
     environment:
-      - START_INDEX=12
-      - END_INDEX=24
-      - SPOTIFY_API=1
+      GROUP: 2
     logging:
       driver: loki
       options:
@@ -36,9 +32,7 @@ services:
     hostname: college-radio-3
     build: .
     environment:
-      - START_INDEX=24
-      - END_INDEX=36
-      - SPOTIFY_API=1
+      GROUP: 3
     logging:
       driver: loki
       options:
@@ -52,9 +46,7 @@ services:
     hostname: college-radio-4
     build: .
     environment:
-      - START_INDEX=36
-      - END_INDEX=48
-      - SPOTIFY_API=1
+      GROUP: 4
     logging:
       driver: loki
       options:
@@ -68,9 +60,7 @@ services:
     hostname: college-radio-5
     build: .
     environment:
-      - START_INDEX=48
-      - END_INDEX=60
-      - SPOTIFY_API=1
+      GROUP: 5
     logging:
       driver: loki
       options:
@@ -84,9 +74,7 @@ services:
     hostname: college-radio-6
     build: .
     environment:
-      - START_INDEX=60
-      - END_INDEX=72
-      - SPOTIFY_API=1
+      GROUP: 6
     logging:
       driver: loki
       options:
@@ -100,9 +88,7 @@ services:
     hostname: college-radio-7
     build: .
     environment:
-      - START_INDEX=72
-      - END_INDEX=84
-      - SPOTIFY_API=1
+      GROUP: 7
     logging:
       driver: loki
       options:
@@ -116,9 +102,7 @@ services:
     hostname: college-radio-8
     build: .
     environment:
-      - START_INDEX=84
-      - END_INDEX=96
-      - SPOTIFY_API=1
+      GROUP: 8
     logging:
       driver: loki
       options:
@@ -132,9 +116,7 @@ services:
     hostname: college-radio-9
     build: .
     environment:
-      - START_INDEX=96
-      - END_INDEX=108
-      - SPOTIFY_API=2
+      GROUP: 9
     logging:
       driver: loki
       options:
@@ -148,9 +130,7 @@ services:
     hostname: college-radio-10
     build: .
     environment:
-      - START_INDEX=108
-      - END_INDEX=120
-      - SPOTIFY_API=2
+      GROUP: 10
     logging:
       driver: loki
       options:
@@ -164,9 +144,7 @@ services:
     hostname: college-radio-11
     build: .
     environment:
-      - START_INDEX=120
-      - END_INDEX=132
-      - SPOTIFY_API=2
+      GROUP: 11
     logging:
       driver: loki
       options:
@@ -180,9 +158,7 @@ services:
     hostname: college-radio-12
     build: .
     environment:
-      - START_INDEX=132
-      - END_INDEX=144
-      - SPOTIFY_API=2
+      GROUP: 12
     logging:
       driver: loki
       options:
@@ -196,9 +172,7 @@ services:
     hostname: college-radio-13
     build: .
     environment:
-      - START_INDEX=144
-      - END_INDEX=156
-      - SPOTIFY_API=2
+      GROUP: 13
     logging:
       driver: loki
       options:
@@ -212,9 +186,7 @@ services:
     hostname: college-radio-14
     build: .
     environment:
-      - START_INDEX=156
-      - END_INDEX=168
-      - SPOTIFY_API=2
+      GROUP: 14
     logging:
       driver: loki
       options:
@@ -228,9 +200,7 @@ services:
     hostname: college-radio-15
     build: .
     environment:
-      - START_INDEX=168
-      - END_INDEX=180
-      - SPOTIFY_API=2
+      GROUP: 15
     logging:
       driver: loki
       options:
@@ -244,9 +214,7 @@ services:
     hostname: college-radio-16
     build: .
     environment:
-      - START_INDEX=180
-      - END_INDEX=192
-      - SPOTIFY_API=3
+      GROUP: 16
     logging:
       driver: loki
       options:
@@ -260,9 +228,7 @@ services:
     hostname: college-radio-17
     build: .
     environment:
-      - START_INDEX=192
-      - END_INDEX=204
-      - SPOTIFY_API=3
+      GROUP: 17
     logging:
       driver: loki
       options:
@@ -276,9 +242,7 @@ services:
     hostname: college-radio-18
     build: .
     environment:
-      - START_INDEX=204
-      - END_INDEX=216
-      - SPOTIFY_API=3
+      GROUP: 18
     logging:
       driver: loki
       options:
@@ -292,9 +256,7 @@ services:
     hostname: college-radio-19
     build: .
     environment:
-      - START_INDEX=216
-      - END_INDEX=228
-      - SPOTIFY_API=3
+      GROUP: 19
     logging:
       driver: loki
       options:
@@ -308,9 +270,7 @@ services:
     hostname: college-radio-20
     build: .
     environment:
-      - START_INDEX=228
-      - END_INDEX=240
-      - SPOTIFY_API=3
+      GROUP: 20
     logging:
       driver: loki
       options:
@@ -324,9 +284,7 @@ services:
     hostname: college-radio-21
     build: .
     environment:
-      - START_INDEX=240
-      - END_INDEX=252
-      - SPOTIFY_API=3
+      GROUP: 21
     logging:
       driver: loki
       options:
@@ -340,9 +298,7 @@ services:
     hostname: college-radio-22
     build: .
     environment:
-      - START_INDEX=252
-      - END_INDEX=264
-      - SPOTIFY_API=3
+      GROUP: 22
     logging:
       driver: loki
       options:
@@ -356,9 +312,7 @@ services:
     hostname: college-radio-23
     build: .
     environment:
-      - START_INDEX=264
-      - END_INDEX=272
-      - SPOTIFY_API=3
+      GROUP: 23
     logging:
       driver: loki
       options:

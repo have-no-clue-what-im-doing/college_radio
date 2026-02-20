@@ -40,7 +40,6 @@ with open('./config.yaml', 'r') as file:
 
 
 
-college_dict = yaml_config['college_dict']
 database_dict = yaml_config['database']
 
 proxy_string = yaml_config['proxy']
@@ -455,7 +454,7 @@ def StreamTime(college_name, radio_stream):
         except Exception as e:
             logger.error(json.dumps({
                 'level': 'error',
-                'error_code': 'GENERAL_ERROR',
+                'error_code': 'STREAM_TIME_ERROR',
                 'hostname': hostname,
                 'college': college_name,
                 'message': str(e)
@@ -463,24 +462,24 @@ def StreamTime(college_name, radio_stream):
             time.sleep(100)
 
 
-start_index = int(os.getenv("START_INDEX", "92"))
-end_index = int(os.getenv("END_INDEX", "98"))
+# from docker config, if unable to get GROUP var, default to value of 1
+radio_group = int(os.getenv("GROUP", "1"))
 
 
-# StreamTime('texas_am', college_dict['texas_am'])
+#create radio stream group list from config.yaml. grab group int from docker compose
+college_group_dict_list = yaml_config['college_groups'][radio_group]
+
+
 
 
 
 def StreamAllColleges():
-    college_keys = list(college_dict.keys())
-    end_index_actual = min(end_index, len(college_keys))
+    executor = ThreadPoolExecutor(max_workers=12)
     
-    executor = ThreadPoolExecutor(max_workers=end_index_actual - start_index)
-    
-    for i in range(start_index, end_index_actual):
-        college_name = college_keys[i]
+    for college_entry in college_group_dict_list:
+        college_name = college_entry[0]
+        radio_stream = college_entry[1]
         print(college_name)
-        radio_stream = college_dict[college_name]
         executor.submit(StreamTime, college_name, radio_stream)
         time.sleep(5)
     
