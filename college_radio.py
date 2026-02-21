@@ -424,7 +424,7 @@ def StreamTime(college_name, radio_stream):
             if (college_name not in codec_cache or 
                 current_time - codec_cache[college_name]['cached_at'] >= 86400):
                 
-                probe = ffmpeg.probe(radio_stream)
+                probe = ffmpeg.probe(radio_stream, timeout=15000000)
                 codec_cache[college_name] = {
                     'codec': probe['streams'][0]['codec_name'],
                     'cached_at': current_time
@@ -436,7 +436,7 @@ def StreamTime(college_name, radio_stream):
             audio_id = college_name + '_' + datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
             file_path = os.path.join(output_folder, f'{audio_id}.{ext}')
             
-            stream = ffmpeg.input(radio_stream, t=60)
+            stream = ffmpeg.input(radio_stream, t=60, reconnect=1, reconnect_streamed=1, reconnect_delay_max=5)
             stream = ffmpeg.output(stream, file_path, acodec=audio_codec, vn=None)  # Use variable codec
             ffmpeg.run(stream, overwrite_output=True, quiet=True, capture_stderr=True)
             
@@ -473,6 +473,21 @@ college_group_dict_list = yaml_config['college_groups'][radio_group]
 
 
 
+def StreamWithRestart(college_name, radio_stream):
+    while True:
+        try:
+            StreamTime(college_name, radio_stream)
+        except Exception as e:
+            print(json.dumps({
+                "level": "error",
+                "error_code": 'THREAD_FAIL',
+                "college": college_name,
+                'hostname': hostname,
+                "message": "Thread crashed, restarting",
+                "error": str(e)
+            }))
+            time.sleep(30)
+
 def StreamAllColleges():
     executor = ThreadPoolExecutor(max_workers=12)
     
@@ -480,7 +495,7 @@ def StreamAllColleges():
         college_name = college_entry[0]
         radio_stream = college_entry[1]
         print(college_name)
-        executor.submit(StreamTime, college_name, radio_stream)
+        executor.submit(StreamWithRestart, college_name, radio_stream)
         time.sleep(5)
     
     while True:
