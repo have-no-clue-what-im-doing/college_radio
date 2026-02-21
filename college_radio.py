@@ -274,8 +274,8 @@ def IdentifySong(audio_file, college_name):
                 }))
         else:
             epoch = round(time.time())
-            local_timezone = timezone(timedelta(hours=-5))
-            entry_date = datetime.now(local_timezone).strftime('%Y-%m-%d %H:%M:%S')
+            # local_timezone = timezone(timedelta(hours=-5))
+            entry_date = datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')
             college = college_name
             
             artist = json_song_response.get('track', {}).get('subtitle', None)
