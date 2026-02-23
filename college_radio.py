@@ -488,6 +488,30 @@ def StreamWithRestart(college_name, radio_stream):
             }))
             time.sleep(30)
 
+
+def AddToCollegeList(college_name):
+    conn = ConnectToDB()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""
+            INSERT INTO college_list (college) 
+            VALUES (%s) 
+            ON CONFLICT DO NOTHING
+        """, (college_name,))
+        conn.commit()
+    except Exception as e:
+        print(json.dumps({
+            "level": "error",
+            "error_code": "COLLEGE_LIST_TABLE_FAIL",
+            "college": college_name,
+            "message": "Failed to add college to list",
+            "error": str(e),
+        }))
+    finally:
+        cursor.close()
+        conn.close()
+
+
 def StreamAllColleges():
     executor = ThreadPoolExecutor(max_workers=12)
     
@@ -495,6 +519,7 @@ def StreamAllColleges():
         college_name = college_entry[0]
         radio_stream = college_entry[1]
         print(college_name)
+        AddToCollegeList(college_name)
         executor.submit(StreamWithRestart, college_name, radio_stream)
         time.sleep(5)
     
