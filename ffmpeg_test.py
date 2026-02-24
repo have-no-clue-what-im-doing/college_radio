@@ -21,3 +21,5 @@ def StreamTest(stream):
 
 
 StreamTest("https://broadcast.shoutcheap.com/stream/wsinradi/stream.pls")
+
+# help(ffmpeg.run)

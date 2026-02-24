@@ -242,7 +242,7 @@ def IdentifySong(audio_file, college_name):
         env = os.environ.copy()
         if proxy_string:
             env['HTTPS_PROXY'] = f'http://{proxy_string}'
-        song_response = subprocess.run(['songrec', 'audio-file-to-recognized-song', audio_file], capture_output=True, text=True, env=env)
+        song_response = subprocess.run(['songrec', 'audio-file-to-recognized-song', audio_file], capture_output=True, text=True, env=env, timeout=30)
         if not song_response.stdout:
             logger.error(json.dumps({
                     'level': 'error',
@@ -261,7 +261,8 @@ def IdentifySong(audio_file, college_name):
                     'error_code': 'SONGREC_FAIL',
                     'hostname': hostname,
                     'college': college_name,
-                    'message': 'Unable to parse json from songrec reply'
+                    'message': 'Unable to parse json from songrec reply',
+                    'error': f'Error: {json_song_response}'
                 }))
             return
         if not json_song_response.get('matches'):
@@ -436,9 +437,10 @@ def StreamTime(college_name, radio_stream):
             audio_id = college_name + '_' + datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
             file_path = os.path.join(output_folder, f'{audio_id}.{ext}')
             
-            stream = ffmpeg.input(radio_stream, t=60, reconnect=1, reconnect_streamed=1, reconnect_delay_max=5)
-            stream = ffmpeg.output(stream, file_path, acodec=audio_codec, vn=None)  # Use variable codec
-            ffmpeg.run(stream, overwrite_output=True, quiet=True, capture_stderr=True)
+            stream = ffmpeg.input(radio_stream, t=60, reconnect=1, reconnect_streamed=1, reconnect_delay_max=5, timeout=15000000)
+            stream = ffmpeg.output(stream, file_path, acodec=audio_codec, vn=None)
+            cmd = ffmpeg.compile(stream, overwrite_output=True)
+            subprocess.run(cmd, capture_output=True, timeout=90)
             
             IdentifySong(file_path, college_name)
         
@@ -448,7 +450,8 @@ def StreamTime(college_name, radio_stream):
                 'error_code': 'FFMPEG_ERROR',
                 'hostname': hostname,
                 'college': college_name,
-                'message': e.stderr.decode() if e.stderr else str(e)
+                'message': "ffmpeg failed during stream time",
+                'error': e.stderr.decode() if e.stderr else str(e)
             }))
             time.sleep(300)
         except Exception as e:
@@ -457,7 +460,8 @@ def StreamTime(college_name, radio_stream):
                 'error_code': 'STREAM_TIME_ERROR',
                 'hostname': hostname,
                 'college': college_name,
-                'message': str(e)
+                'message': "ffmpeg failed during stream time",
+                'error': str(e)
             }))
             time.sleep(100)
 
@@ -489,28 +493,6 @@ def StreamWithRestart(college_name, radio_stream):
             time.sleep(30)
 
 
-def AddToCollegeList(college_name):
-    conn = ConnectToDB()
-    cursor = conn.cursor()
-    try:
-        cursor.execute("""
-            INSERT INTO college_list (college) 
-            VALUES (%s) 
-            ON CONFLICT DO NOTHING
-        """, (college_name,))
-        conn.commit()
-    except Exception as e:
-        print(json.dumps({
-            "level": "error",
-            "error_code": "COLLEGE_LIST_TABLE_FAIL",
-            "college": college_name,
-            "message": "Failed to add college to list",
-            "error": str(e),
-        }))
-    finally:
-        cursor.close()
-        conn.close()
-
 
 def StreamAllColleges():
     executor = ThreadPoolExecutor(max_workers=12)
@@ -519,7 +501,6 @@ def StreamAllColleges():
         college_name = college_entry[0]
         radio_stream = college_entry[1]
         print(college_name)
-        AddToCollegeList(college_name)
         executor.submit(StreamWithRestart, college_name, radio_stream)
         time.sleep(5)
     
