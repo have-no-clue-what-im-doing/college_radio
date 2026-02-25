@@ -437,7 +437,7 @@ def StreamTime(college_name, radio_stream):
             audio_id = college_name + '_' + datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
             file_path = os.path.join(output_folder, f'{audio_id}.{ext}')
             
-            stream = ffmpeg.input(radio_stream, t=60, reconnect=1, reconnect_streamed=1, reconnect_delay_max=5, timeout=15000000)
+            stream = ffmpeg.input(radio_stream, t=60, reconnect=1, reconnect_streamed=1, timeout=15000000)
             stream = ffmpeg.output(stream, file_path, acodec=audio_codec, vn=None)
             cmd = ffmpeg.compile(stream, overwrite_output=True)
             result = subprocess.run(cmd, capture_output=True, timeout=90)
