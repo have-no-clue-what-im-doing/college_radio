@@ -13,6 +13,7 @@ services:
         loki-timeout: "10s"
         loki-retries: "2"
         labels: "app=collage_radio"
+    restart: unless-stopped
   college_stream_2:
     container_name: college-radio-2
     hostname: college-radio-2
@@ -27,6 +28,7 @@ services:
         loki-timeout: "10s"
         loki-retries: "2"
         labels: "app=collage_radio"
+    restart: unless-stopped
   college_stream_3:
     container_name: college-radio-3
     hostname: college-radio-3
@@ -41,6 +43,7 @@ services:
         loki-timeout: "10s"
         loki-retries: "2"
         labels: "app=collage_radio"
+    restart: unless-stopped
   college_stream_4:
     container_name: college-radio-4
     hostname: college-radio-4
@@ -55,6 +58,7 @@ services:
         loki-timeout: "10s"
         loki-retries: "2"
         labels: "app=collage_radio"
+    restart: unless-stopped
   college_stream_5:
     container_name: college-radio-5
     hostname: college-radio-5
@@ -69,6 +73,7 @@ services:
         loki-timeout: "10s"
         loki-retries: "2"
         labels: "app=collage_radio"
+    restart: unless-stopped
   college_stream_6:
     container_name: college-radio-6
     hostname: college-radio-6
@@ -83,6 +88,7 @@ services:
         loki-timeout: "10s"
         loki-retries: "2"
         labels: "app=collage_radio"
+    restart: unless-stopped
   college_stream_7:
     container_name: college-radio-7
     hostname: college-radio-7
@@ -97,6 +103,7 @@ services:
         loki-timeout: "10s"
         loki-retries: "2"
         labels: "app=collage_radio"
+    restart: unless-stopped
   college_stream_8:
     container_name: college-radio-8
     hostname: college-radio-8
@@ -111,6 +118,7 @@ services:
         loki-timeout: "10s"
         loki-retries: "2"
         labels: "app=collage_radio"
+    restart: unless-stopped
   college_stream_9:
     container_name: college-radio-9
     hostname: college-radio-9
@@ -125,6 +133,7 @@ services:
         loki-timeout: "10s"
         loki-retries: "2"
         labels: "app=collage_radio"
+    restart: unless-stopped
   college_stream_10:
     container_name: college-radio-10
     hostname: college-radio-10
@@ -139,6 +148,7 @@ services:
         loki-timeout: "10s"
         loki-retries: "2"
         labels: "app=collage_radio"
+    restart: unless-stopped
   college_stream_11:
     container_name: college-radio-11
     hostname: college-radio-11
@@ -153,6 +163,7 @@ services:
         loki-timeout: "10s"
         loki-retries: "2"
         labels: "app=collage_radio"
+    restart: unless-stopped
   college_stream_12:
     container_name: college-radio-12
     hostname: college-radio-12
@@ -167,6 +178,7 @@ services:
         loki-timeout: "10s"
         loki-retries: "2"
         labels: "app=collage_radio"
+    restart: unless-stopped
   college_stream_13:
     container_name: college-radio-13
     hostname: college-radio-13
@@ -181,6 +193,7 @@ services:
         loki-timeout: "10s"
         loki-retries: "2"
         labels: "app=collage_radio"
+    restart: unless-stopped
   college_stream_14:
     container_name: college-radio-14
     hostname: college-radio-14
@@ -195,6 +208,7 @@ services:
         loki-timeout: "10s"
         loki-retries: "2"
         labels: "app=collage_radio"
+    restart: unless-stopped
   college_stream_15:
     container_name: college-radio-15
     hostname: college-radio-15
@@ -209,6 +223,7 @@ services:
         loki-timeout: "10s"
         loki-retries: "2"
         labels: "app=collage_radio"
+    restart: unless-stopped
   college_stream_16:
     container_name: college-radio-16
     hostname: college-radio-16
@@ -223,6 +238,7 @@ services:
         loki-timeout: "10s"
         loki-retries: "2"
         labels: "app=collage_radio"
+    restart: unless-stopped
   college_stream_17:
     container_name: college-radio-17
     hostname: college-radio-17
@@ -237,6 +253,7 @@ services:
         loki-timeout: "10s"
         loki-retries: "2"
         labels: "app=collage_radio"
+    restart: unless-stopped
   college_stream_18:
     container_name: college-radio-18
     hostname: college-radio-18
@@ -251,6 +268,7 @@ services:
         loki-timeout: "10s"
         loki-retries: "2"
         labels: "app=collage_radio"
+    restart: unless-stopped
   college_stream_19:
     container_name: college-radio-19
     hostname: college-radio-19
@@ -265,6 +283,7 @@ services:
         loki-timeout: "10s"
         loki-retries: "2"
         labels: "app=collage_radio"
+    restart: unless-stopped
   college_stream_20:
     container_name: college-radio-20
     hostname: college-radio-20
@@ -279,6 +298,7 @@ services:
         loki-timeout: "10s"
         loki-retries: "2"
         labels: "app=collage_radio"
+    restart: unless-stopped
   college_stream_21:
     container_name: college-radio-21
     hostname: college-radio-21
@@ -293,6 +313,7 @@ services:
         loki-timeout: "10s"
         loki-retries: "2"
         labels: "app=collage_radio"
+    restart: unless-stopped
   college_stream_22:
     container_name: college-radio-22
     hostname: college-radio-22
@@ -307,6 +328,7 @@ services:
         loki-timeout: "10s"
         loki-retries: "2"
         labels: "app=collage_radio"
+    restart: unless-stopped
   college_stream_23:
     container_name: college-radio-23
     hostname: college-radio-23
@@ -321,4 +343,5 @@ services:
         loki-timeout: "10s"
         loki-retries: "2"
         labels: "app=collage_radio"
+    restart: unless-stopped
   

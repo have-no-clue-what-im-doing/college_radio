@@ -440,7 +440,18 @@ def StreamTime(college_name, radio_stream):
             stream = ffmpeg.input(radio_stream, t=60, reconnect=1, reconnect_streamed=1, reconnect_delay_max=5, timeout=15000000)
             stream = ffmpeg.output(stream, file_path, acodec=audio_codec, vn=None)
             cmd = ffmpeg.compile(stream, overwrite_output=True)
-            subprocess.run(cmd, capture_output=True, timeout=90)
+            result = subprocess.run(cmd, capture_output=True, timeout=90)
+            if result.returncode != 0:
+                logger.error(json.dumps({
+                    'level': 'error',
+                    'error_code': 'FFMPEG_ERROR',
+                    'hostname': hostname,
+                    'college': college_name,
+                    'message': 'ffmpeg exited with error',
+                    'error': result.stderr.decode()
+                }))
+                time.sleep(300)
+                continue
             
             IdentifySong(file_path, college_name)
         
