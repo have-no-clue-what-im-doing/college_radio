@@ -74,7 +74,7 @@ def StreamTime(college_name, radio_stream):
             time.sleep(10)
 
 
-StreamTime('cincinnati', 'https://s2.radio.co/s20123bfa0/listen')
+StreamTime('cincinnati', 'https://stream.wriu.org/wriu-fm')
             
 '''
 def StreamAllColleges():

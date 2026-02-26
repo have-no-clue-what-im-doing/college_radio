@@ -271,8 +271,10 @@ def IdentifySong(audio_file, college_name):
                     'error_code': 'SONGREC_NO_SONG',
                     'hostname': hostname,
                     'college': college_name,
-                    'message': 'Songrec failed to identify the song'
+                    'message': 'Songrec failed to identify the song',
+                    # 'error': f"{json_song_response}"
                 }))
+            return
         else:
             epoch = round(time.time())
             # local_timezone = timezone(timedelta(hours=-5))
@@ -437,7 +439,7 @@ def StreamTime(college_name, radio_stream):
             audio_id = college_name + '_' + datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
             file_path = os.path.join(output_folder, f'{audio_id}.{ext}')
             
-            stream = ffmpeg.input(radio_stream, t=60, reconnect=1, reconnect_streamed=1, timeout=15000000)
+            stream = ffmpeg.input(radio_stream, t=60, reconnect=1, reconnect_streamed=1, timeout=15000000, re=None)
             stream = ffmpeg.output(stream, file_path, acodec=audio_codec, vn=None)
             cmd = ffmpeg.compile(stream, overwrite_output=True)
             result = subprocess.run(cmd, capture_output=True, timeout=90)
@@ -452,8 +454,24 @@ def StreamTime(college_name, radio_stream):
                 }))
                 time.sleep(300)
                 continue
+            local_file_probe = ffmpeg.probe(file_path)
+            audio_length = float(local_file_probe['format']['duration'])
+            if audio_length and audio_length >= 55:
+                print(f"audio length: {audio_length} file path: {file_path}")
+                IdentifySong(file_path, college_name)
+            else:
+                logger.error(json.dumps({
+                    'level': 'error',
+                    'error_code': 'FFMPEG_DURATION_ERROR',
+                    'hostname': hostname,
+                    'college': college_name,
+                    'message': 'ffmpeg did not download a large enough audio file to inspect / ffmpeg local probe failed',
+                    'error': f"audio length: {audio_length}. ffmpeg: {result.stderr.decode()}"
+                }))
+                time.sleep(100)
+                continue
+
             
-            IdentifySong(file_path, college_name)
         
         except ffmpeg.Error as e:
             logger.error(json.dumps({
@@ -483,6 +501,10 @@ radio_group = int(os.getenv("GROUP", "1"))
 
 #create radio stream group list from config.yaml. grab group int from docker compose
 college_group_dict_list = yaml_config['college_groups'][radio_group]
+
+
+# college_group_dict_list = [["rhode_island", "https://stream.wriu.org/wriu-fm"]]
+
 
 
 
