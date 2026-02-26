@@ -457,7 +457,7 @@ def StreamTime(college_name, radio_stream):
             local_file_probe = ffmpeg.probe(file_path)
             audio_length = float(local_file_probe['format']['duration'])
             if audio_length and audio_length >= 55:
-                print(f"audio length: {audio_length} file path: {file_path}")
+                # print(f"audio length: {audio_length} file path: {file_path}")
                 IdentifySong(file_path, college_name)
             else:
                 logger.error(json.dumps({
