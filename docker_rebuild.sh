@@ -1,6 +1,6 @@
 #!/bin/bash
 echo "Git pull"
-git pull
+sudo -u broderic git pull
 echo "Git pull done!"
 echo "Creating new docking compose"
 python3 create_docker_compose.py
