@@ -466,7 +466,7 @@ def StreamTime(college_name, radio_stream):
                     'hostname': hostname,
                     'college': college_name,
                     'message': 'ffmpeg did not download a large enough audio file to inspect / ffmpeg local probe failed',
-                    'error': f"audio length: {audio_length}. ffmpeg: {result.stderr.decode()}"
+                    'error': f"audio length: {audio_length}."
                 }))
                 time.sleep(100)
                 continue

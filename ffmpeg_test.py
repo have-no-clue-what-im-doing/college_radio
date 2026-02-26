@@ -20,6 +20,6 @@ def StreamTest(stream):
 
 
 
-StreamTest("https://broadcast.shoutcheap.com/stream/wsinradi/stream.pls")
+StreamTest("https://stream.wriu.org/wriu-fm")
 
 # help(ffmpeg.run)
