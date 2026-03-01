@@ -407,19 +407,19 @@ def StreamTime(college_name, radio_stream):
     
     while True: 
         try:
-            r = requests.get(radio_stream, stream=True, verify=False, timeout=15)
-            if r.status_code != 200:
-                logger.error(json.dumps({
-                    'level': 'error',
-                    'error_code': 'NO_HTTP_200',
-                    'hostname': hostname,
-                    'college': college_name,
-                    'message': 'Did not receive a 200 response from radio stream',
-                }))
-                r.close()
-                time.sleep(300)
-                continue
-            r.close()
+            # r = requests.get(radio_stream, stream=True, verify=False, timeout=15)
+            # if r.status_code != 200:
+            #     logger.error(json.dumps({
+            #         'level': 'error',
+            #         'error_code': 'NO_HTTP_200',
+            #         'hostname': hostname,
+            #         'college': college_name,
+            #         'message': 'Did not receive a 200 response from radio stream',
+            #     }))
+            #     r.close()
+            #     time.sleep(300)
+            #     continue
+            # r.close()
 
 
             current_time = round(time.time())

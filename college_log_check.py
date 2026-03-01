@@ -33,10 +33,14 @@ def QueryLastEntry(college):
     query = f"SELECT entry_date from all_colleges where college=\'{college}\' ORDER BY id DESC LIMIT 1"
     c.execute(query)
     data = c.fetchall()
+    if not data:
+        print(f"no entries from {college}")
+        return
     date = data[0][0]
+    
     time_now = datetime.now(timezone.utc).replace(tzinfo=None)
     diff = time_now - date
-    hours = 4
+    hours = 24
     if diff > timedelta(hours=hours):
         print(f"{college} no log in last {hours} hours!")
     

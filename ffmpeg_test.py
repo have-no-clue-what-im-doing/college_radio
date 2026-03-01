@@ -17,9 +17,11 @@ def StreamTest(stream):
         # print(json.dumps(probe))
         print(probe)
         print(codec)
+    else:
+        print("nothing")
 
 
 
-StreamTest("https://stream.wriu.org/wriu-fm")
+StreamTest("https://dvstream2.bgsu.edu/wfal")
 
 # help(ffmpeg.run)
