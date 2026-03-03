@@ -185,7 +185,7 @@ def StreamTime(college_name, radio_stream):
             }))
             time.sleep(1)
 
-StreamTime('cincinnatiii', 'https://listen.mixlr.com/162b3877573a61516f6c3723d89b3bd9')
+StreamTime('cincinnatiii', 'https://xcsb.live/listen/xcsb-cleveland/xcsb.aac')
             
 '''
 def StreamAllColleges():

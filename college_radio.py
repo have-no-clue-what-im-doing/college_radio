@@ -37,6 +37,8 @@ codec_cache = {}
 with open('./config.yaml', 'r') as file:
     yaml_config = yaml.safe_load(file)
 
+with open('./college_list.yaml') as file:
+    college_config = yaml.safe_load(file)
 
 
 
@@ -500,7 +502,7 @@ radio_group = int(os.getenv("GROUP", "1"))
 
 
 #create radio stream group list from config.yaml. grab group int from docker compose
-college_group_dict_list = yaml_config['college_groups'][radio_group]
+college_group_dict_list = college_config['college_groups'][radio_group]
 
 
 # college_group_dict_list = [["rhode_island", "https://stream.wriu.org/wriu-fm"]]
